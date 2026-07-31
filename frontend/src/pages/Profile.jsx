@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { User, Edit3, LogOut, ShieldCheck, ClipboardList, Bell, FileText, ExternalLink, Calendar, CheckCircle2, Circle, Send, Code, Link2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import { API_URL, resolveUploadUrl } from '../config/api';
 
 const timelineSteps = [
   'Applied',
@@ -50,11 +51,11 @@ const Profile = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/applications/status');
+      const res = await axios.get(`${API_URL}/applications/status`);
       setAppStatus(res.data.application);
 
       // Fetch live database alerts
-      const notifyRes = await axios.get('http://localhost:5000/api/applications/student/notifications');
+      const notifyRes = await axios.get(`${API_URL}/applications/student/notifications`);
       setNotifications(notifyRes.data.notifications || []);
     } catch (err) {
       console.error('Error fetching dashboard status:', err);
@@ -80,7 +81,7 @@ const Profile = () => {
 
   const submitTaskResponse = async (data) => {
     try {
-      await axios.post('http://localhost:5000/api/applications/student/submit-task', {
+      await axios.post(`${API_URL}/applications/student/submit-task`, {
         githubLink: data.githubLink,
         liveUrl: data.liveUrl
       });
@@ -340,7 +341,7 @@ const Profile = () => {
                       <p className="text-xs text-white/70 mt-1 truncate max-w-[150px]">PDF Document</p>
                     </div>
                     <a
-                      href={appStatus.resumeUrl.startsWith('http') ? appStatus.resumeUrl : `http://localhost:5000${appStatus.resumeUrl}`}
+                      href={resolveUploadUrl(appStatus.resumeUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-brand-gold/10 hover:bg-brand-gold text-brand-gold hover:text-brand-brown-dark border border-brand-gold/20 rounded-lg transition-colors"

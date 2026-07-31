@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ClipboardList, User, Award, Terminal, FileText, CheckCircle2, ChevronRight, ChevronLeft, Plus, Trash2, Upload, Briefcase } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import { API_URL } from '../config/api';
 
 const steps = [
   { id: 1, name: 'Personal & Domain', icon: <User className="w-5 h-5" /> },
@@ -138,7 +139,7 @@ const Apply = () => {
       formData.append('resume', resumeFile);
 
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:5000/api/applications/submit', formData, {
+      const res = await axios.post(`${API_URL}/applications/submit`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': token ? `Bearer ${token}` : '',

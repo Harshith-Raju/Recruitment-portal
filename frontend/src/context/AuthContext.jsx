@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
 const AuthContext = createContext(null);
 
@@ -8,9 +9,6 @@ export const useAuth = () => {
   if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
-
-// Base URL for API calls
-const API_URL = 'http://localhost:5000/api';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -69,13 +67,6 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
-  const login = async (email, password) => {
-    const res = await axios.post(`${API_URL}/api/auth/login` /* wait, URL fallback check */, { email, password });
-    // Note: fallback mapping below will safely target correctly
-    return res.data;
-  };
-
-  // Safe wrapper mapping for all login requests
   const loginUserApi = async (email, password) => {
     const res = await axios.post(`${API_URL}/auth/login`, { email, password });
     if (res.data.token) {

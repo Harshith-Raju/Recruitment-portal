@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronLeft, ChevronRight, ArrowUpDown, RefreshCw, Eye } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import { API_URL } from '../config/api';
 
 const domainsList = ['All', 'AI', 'Web Development', 'App Development', 'Competitive Programming', 'Design Team', 'Content Team', 'Event Management'];
 const statusList = ['All', 'Pending', 'Under Review', 'Interview Scheduled', 'Task Assigned', 'Interview Completed', 'Selected', 'Rejected'];
@@ -33,13 +34,13 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       // 1. Fetch Stats
-      const statsRes = await axios.get('http://localhost:5000/api/applications/admin/stats');
+      const statsRes = await axios.get(`${API_URL}/applications/admin/stats`);
       setStats(statsRes.data.stats);
       setCharts(statsRes.data.charts);
 
       // 2. Fetch Paginated Application Lists
       const domainFilter = selectedDomain === 'CP' ? 'Competitive Programming' : selectedDomain;
-      const listRes = await axios.get('http://localhost:5000/api/applications/admin/list', {
+      const listRes = await axios.get(`${API_URL}/applications/admin/list`, {
         params: {
           searchQuery,
           domain: domainFilter,

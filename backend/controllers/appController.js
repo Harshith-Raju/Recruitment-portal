@@ -3,8 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const pdfParse = require('pdf-parse');
-const nodemailer = require('nodemailer');
 const Application = require('../models/Application');
+const { sendRecruitmentEmail } = require('../utils/mailer');
+const { isDbConnected } = require('../config/db');
 
 // Check and configure Cloudinary
 const isCloudinaryConfigured = () => {
@@ -26,49 +27,9 @@ if (isCloudinaryConfigured()) {
 // In-memory data store fallback
 let inMemoryApps = [];
 
-const isDbConnected = () => {
-  return mongoose.connection.readyState === 1;
-};
-
 // Generate unique 5-character string
 const generateShortId = () => {
   return Math.random().toString(36).substring(2, 7).toUpperCase();
-};
-
-const sendRecruitmentEmail = async (email, subject, title, bodyHtml) => {
-  console.log(`[SMTP SIMULATOR] Dispatching Email to ${email}. Subject: "${subject}"`);
-  try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.ethereal.email',
-      port: process.env.SMTP_PORT || 587,
-      auth: {
-        user: process.env.SMTP_USER || '',
-        pass: process.env.SMTP_PASS || '',
-      },
-    });
-
-    const mailOptions = {
-      from: '"SRKR Coding Club" <recruitment@srkrec.edu.in>',
-      to: email,
-      subject: `${subject} - SRKR Coding Club`,
-      text: `${title}\n\nDetails:\n${bodyHtml.replace(/<[^>]*>/g, '')}`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ffd700; border-radius: 12px; background-color: #2b1f1d; color: #ffffff;">
-          <h2 style="color: #ffd700; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">${title}</h2>
-          <div style="font-size: 14px; line-height: 1.6; color: #e5e5e5; margin-top: 20px;">
-            ${bodyHtml}
-          </div>
-          <p style="font-size: 11px; color: #a3a3a3; margin-top: 30px; border-top: 1px solid #444; padding-top: 10px;">
-            This is an automated notification from the SRKR Coding Club Recruitment Portal. Please do not reply directly.
-          </p>
-        </div>
-      `,
-    };
-    await transporter.sendMail(mailOptions);
-    console.log(`Email dispatched successfully to ${email}`);
-  } catch (err) {
-    console.warn(`SMTP Dispatch failed to ${email}:`, err.message);
-  }
 };
 
 // @desc    Submit application form

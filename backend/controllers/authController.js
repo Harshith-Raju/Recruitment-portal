@@ -1,8 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const { sendOTPEmail } = require('../utils/mailer');
+const { isDbConnected } = require('../config/db');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'srkr_jwt_secret_key_12345', {
@@ -11,14 +12,16 @@ const generateToken = (id) => {
 };
 
 // In-memory fallback database
+const adminEmail = process.env.ADMIN_EMAIL || 'admin@srkrec.edu.in';
+const adminPassword = process.env.ADMIN_PASSWORD || 'adminpassword123';
 const adminSalt = bcrypt.genSaltSync(10);
-const hashedAdminPassword = bcrypt.hashSync('adminpassword123', adminSalt);
+const hashedAdminPassword = bcrypt.hashSync(adminPassword, adminSalt);
 let inMemoryUsers = [
   {
     _id: 'admin-user-id-0000',
     id: 'admin-user-id-0000',
     name: 'Club Administrator',
-    email: 'admin@srkrec.edu.in',
+    email: adminEmail,
     password: hashedAdminPassword,
     registerNo: 'ADMIN',
     deptYear: 'Staff',
@@ -28,37 +31,22 @@ let inMemoryUsers = [
   }
 ];
 
-const isDbConnected = () => {
-  return mongoose.connection.readyState === 1;
-};
+const formatUserResponse = (user) => ({
+  id: user._id || user.id,
+  name: user.name,
+  email: user.email,
+  registerNo: user.registerNo,
+  deptYear: user.deptYear,
+  profilePicture: user.profilePicture,
+  isVerified: user.isVerified,
+  isAdmin: Boolean(user.isAdmin),
+});
 
-// Simulated email transporter
-const getTransporter = () => {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.ethereal.email',
-    port: process.env.SMTP_PORT || 587,
-    auth: {
-      user: process.env.SMTP_USER || '',
-      pass: process.env.SMTP_PASS || '',
-    },
-  });
-};
-
-const sendOTPEmail = async (email, otp) => {
-  console.log(`[SMTP SIMULATOR] OTP Code for ${email} is: ${otp}`);
-  try {
-    const transporter = getTransporter();
-    const mailOptions = {
-      from: '"SRKR Coding Club" <recruitment@srkrec.edu.in>',
-      to: email,
-      subject: 'Verification OTP - SRKR Coding Club',
-      text: `Your OTP for verification is: ${otp}. It is valid for 10 minutes.`,
-      html: `<h3>Verification OTP</h3><p>Your OTP for verification is: <b>${otp}</b>. It is valid for 10 minutes.</p>`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (err) {
-    console.warn('SMTP Send failed. That is fine, code was logged in console.', err.message);
+const maybeIncludeDebugOtp = (payload, otp) => {
+  if (process.env.NODE_ENV !== 'production') {
+    return { ...payload, debugOtp: otp };
   }
+  return payload;
 };
 
 // @desc    Register new student
@@ -112,11 +100,12 @@ const registerUser = async (req, res) => {
 
     await sendOTPEmail(email, otp);
 
-    res.status(201).json({
-      message: 'Registration successful! Verification OTP sent.',
-      email,
-      debugOtp: otp,
-    });
+    res.status(201).json(
+      maybeIncludeDebugOtp(
+        { message: 'Registration successful! Verification OTP sent.', email },
+        otp
+      )
+    );
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -158,15 +147,7 @@ const verifyOTP = async (req, res) => {
     res.status(200).json({
       message: 'Email verified successfully!',
       token: generateToken(user._id || user.id),
-      user: {
-        id: user._id || user.id,
-        name: user.name,
-        email: user.email,
-        registerNo: user.registerNo,
-        deptYear: user.deptYear,
-        profilePicture: user.profilePicture,
-        isVerified: user.isVerified,
-      },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -199,12 +180,16 @@ const loginUser = async (req, res) => {
       }
       await sendOTPEmail(email, otp);
 
-      return res.status(403).json({
-        message: 'Account not verified. Verification OTP sent.',
-        unverified: true,
-        email: user.email,
-        debugOtp: otp,
-      });
+      return res.status(403).json(
+        maybeIncludeDebugOtp(
+          {
+            message: 'Account not verified. Verification OTP sent.',
+            unverified: true,
+            email: user.email,
+          },
+          otp
+        )
+      );
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -214,15 +199,7 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({
       token: generateToken(user._id || user.id),
-      user: {
-        id: user._id || user.id,
-        name: user.name,
-        email: user.email,
-        registerNo: user.registerNo,
-        deptYear: user.deptYear,
-        profilePicture: user.profilePicture,
-        isVerified: user.isVerified,
-      },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -256,11 +233,12 @@ const forgotPassword = async (req, res) => {
 
     await sendOTPEmail(email, otp);
 
-    res.status(200).json({
-      message: 'Password reset OTP sent successfully!',
-      email: user.email,
-      debugOtp: otp,
-    });
+    res.status(200).json(
+      maybeIncludeDebugOtp(
+        { message: 'Password reset OTP sent successfully!', email: user.email },
+        otp
+      )
+    );
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -348,15 +326,7 @@ const updateUserProfile = async (req, res) => {
 
     res.status(200).json({
       message: 'Profile updated successfully!',
-      user: {
-        id: user._id || user.id,
-        name: user.name,
-        email: user.email,
-        registerNo: user.registerNo,
-        deptYear: user.deptYear,
-        profilePicture: user.profilePicture,
-        isVerified: user.isVerified,
-      },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

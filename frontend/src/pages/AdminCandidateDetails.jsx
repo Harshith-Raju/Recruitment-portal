@@ -4,6 +4,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { User, FileText, ArrowLeft, ShieldCheck, Save, CalendarPlus, CheckSquare, ExternalLink, Award } from 'lucide-react';
 import { useNotification } from '../context/NotificationContext';
+import { API_URL, resolveUploadUrl } from '../config/api';
 
 const timelineSteps = [
   'Applied',
@@ -54,7 +55,7 @@ const AdminCandidateDetails = () => {
   useEffect(() => {
     const fetchCandidateData = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/applications/admin/list');
+        const res = await axios.get(`${API_URL}/applications/admin/list`);
         const match = res.data.applications.find(a => a._id === id || a.id === id);
         if (match) {
           setApp(match);
@@ -101,7 +102,7 @@ const AdminCandidateDetails = () => {
   const saveEvaluation = async () => {
     setSavingEval(true);
     try {
-      await axios.post(`http://localhost:5000/api/applications/admin/${id}/notes-score`, {
+      await axios.post(`${API_URL}/applications/admin/${id}/notes-score`, {
         adminNotes,
         resumeScore: parseInt(resumeScore)
       });
@@ -119,7 +120,7 @@ const AdminCandidateDetails = () => {
     setSavingJury(true);
     const overallRating = Math.round(((commScore + techScore + psScore + leadScore + confScore + fitScore) / 6) * 10) / 10;
     try {
-      const res = await axios.post(`http://localhost:5000/api/applications/admin/${id}/jury`, {
+      const res = await axios.post(`${API_URL}/applications/admin/${id}/jury`, {
         communication: parseInt(commScore),
         technical: parseInt(techScore),
         problemSolving: parseInt(psScore),
@@ -141,7 +142,7 @@ const AdminCandidateDetails = () => {
 
   const handleStatusUpdate = async (status) => {
     try {
-      await axios.put(`http://localhost:5000/api/applications/admin/${id}/status`, { status });
+      await axios.put(`${API_URL}/applications/admin/${id}/status`, { status });
       setApp(prev => ({ ...prev, status }));
       showToast(`Recruitment status modified to: ${status}`, 'success');
     } catch (err) {
@@ -158,7 +159,7 @@ const AdminCandidateDetails = () => {
     }
     setScheduling(true);
     try {
-      const res = await axios.post(`http://localhost:5000/api/applications/admin/${id}/schedule`, {
+      const res = await axios.post(`${API_URL}/applications/admin/${id}/schedule`, {
         date: interviewDate,
         time: interviewTime,
         link: interviewLink,
@@ -182,7 +183,7 @@ const AdminCandidateDetails = () => {
     }
     setAssigningTask(true);
     try {
-      const res = await axios.post(`http://localhost:5000/api/applications/admin/${id}/assign-task`, {
+      const res = await axios.post(`${API_URL}/applications/admin/${id}/assign-task`, {
         title: taskTitle,
         description: taskDesc,
         deadline: taskDeadline
@@ -389,7 +390,7 @@ const AdminCandidateDetails = () => {
                 <div className="w-full h-[550px] bg-black/25 border border-white/10 rounded-xl overflow-hidden mt-1 relative shadow-inner">
                   {app?.resumeUrl ? (
                     <iframe
-                      src={app.resumeUrl.startsWith('http') ? app.resumeUrl : `http://localhost:5000${app.resumeUrl}`}
+                      src={resolveUploadUrl(app.resumeUrl)}
                       className="w-full h-full border-none"
                       title="Resume PDF Viewer"
                     />

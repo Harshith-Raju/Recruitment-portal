@@ -59,9 +59,9 @@ const Footer = () => {
             <li>
               <NavLink to="/contact" className="text-white/60 hover:text-brand-gold transition-colors">Contact Support</NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink to="/admin/login" className="text-white/40 hover:text-brand-gold transition-colors font-mono text-[11px] uppercase tracking-wider">Admin Login</NavLink>
-            </li>
+            </li> */}
           </ul>
         </div>
 
@@ -85,11 +85,11 @@ const Footer = () => {
             </li>
             <li className="flex items-center gap-3">
               <Mail className="w-5 h-5 text-brand-gold flex-shrink-0" />
-              <a href="mailto:codingclub@srkrec.edu.in" className="hover:text-brand-gold transition-colors">codingclub@srkrec.edu.in</a>
+              <a href="mailto:codingclub@srkrec.edu.in" className="hover:text-brand-gold transition-colors">srkrcodingclubofficial@gmail.com</a>
             </li>
             <li className="flex items-center gap-3">
               <Phone className="w-5 h-5 text-brand-gold flex-shrink-0" />
-              <span>+91 98765 43210</span>
+              <span>+91 8500216667</span>
             </li>
           </ul>
         </div>

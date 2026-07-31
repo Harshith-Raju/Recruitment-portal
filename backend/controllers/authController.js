@@ -43,9 +43,6 @@ const formatUserResponse = (user) => ({
 });
 
 const maybeIncludeDebugOtp = (payload, otp) => {
-  if (process.env.NODE_ENV !== 'production') {
-    return { ...payload, debugOtp: otp };
-  }
   return payload;
 };
 

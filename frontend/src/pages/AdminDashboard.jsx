@@ -7,7 +7,18 @@ import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import { API_URL } from '../config/api';
 
-const domainsList = ['All', 'AI', 'Web Development', 'App Development', 'Competitive Programming', 'Design Team', 'Content Team', 'Event Management'];
+const domainsList = [
+  'All',
+  'Web Development',
+  'Training',
+  'Competitive Programming',
+  'Design Team',
+  'Media',
+  'Content Team',
+  'Public Relations',
+  'Corporate Relations',
+  'Event Management'
+];
 const statusList = ['All', 'Pending', 'Under Review', 'Interview Scheduled', 'Task Assigned', 'Interview Completed', 'Selected', 'Rejected'];
 
 const AdminDashboard = () => {
@@ -137,7 +148,7 @@ const AdminDashboard = () => {
             <div className="glass-card p-6 border border-white/5 flex flex-col gap-4">
               <h3 className="text-xs uppercase tracking-wider font-extrabold text-white/50 border-b border-white/5 pb-2">Applications by Domain</h3>
               <div className="flex flex-col gap-3.5 mt-2">
-                {Object.entries(charts.domain).map(([dom, val]) => {
+                {charts.domain && Object.entries(charts.domain).map(([dom, val]) => {
                   const maxVal = getMaxChartValue(charts.domain);
                   const percentage = Math.round((val / maxVal) * 100);
                   return (
@@ -152,21 +163,21 @@ const AdminDashboard = () => {
                     </div>
                   );
                 })}
-                {Object.keys(charts.domain).length === 0 && <p className="text-xs text-white/30 text-center py-4">No data.</p>}
+                {charts.domain && Object.keys(charts.domain).length === 0 && <p className="text-xs text-white/30 text-center py-4">No data.</p>}
               </div>
             </div>
 
-            {/* Chart 2: Branch Distribution */}
+            {/* Chart 2: Status Breakdown */}
             <div className="glass-card p-6 border border-white/5 flex flex-col gap-4">
-              <h3 className="text-xs uppercase tracking-wider font-extrabold text-white/50 border-b border-white/5 pb-2">Applications by Branch</h3>
+              <h3 className="text-xs uppercase tracking-wider font-extrabold text-white/50 border-b border-white/5 pb-2">Review Funnel Stages</h3>
               <div className="flex flex-col gap-3.5 mt-2">
-                {Object.entries(charts.branch).map(([branch, val]) => {
-                  const maxVal = getMaxChartValue(charts.branch);
+                {charts.status && Object.entries(charts.status).map(([st, val]) => {
+                  const maxVal = getMaxChartValue(charts.status);
                   const percentage = Math.round((val / maxVal) * 100);
                   return (
-                    <div key={branch} className="flex flex-col gap-1 text-xs">
+                    <div key={st} className="flex flex-col gap-1 text-xs">
                       <div className="flex justify-between text-white/70">
-                        <span className="font-semibold">{branch}</span>
+                        <span className="font-semibold truncate">{st}</span>
                         <span className="font-mono">{val}</span>
                       </div>
                       <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
@@ -175,21 +186,20 @@ const AdminDashboard = () => {
                     </div>
                   );
                 })}
-                {Object.keys(charts.branch).length === 0 && <p className="text-xs text-white/30 text-center py-4">No data.</p>}
               </div>
             </div>
 
-            {/* Chart 3: Year Distribution */}
+            {/* Chart 3: Dept/Batch Stats */}
             <div className="glass-card p-6 border border-white/5 flex flex-col gap-4">
-              <h3 className="text-xs uppercase tracking-wider font-extrabold text-white/50 border-b border-white/5 pb-2">Applications by Year</h3>
+              <h3 className="text-xs uppercase tracking-wider font-extrabold text-white/50 border-b border-white/5 pb-2">Top Branches/Years</h3>
               <div className="flex flex-col gap-3.5 mt-2">
-                {Object.entries(charts.year).map(([year, val]) => {
-                  const maxVal = getMaxChartValue(charts.year);
+                {charts.branch && Object.entries(charts.branch).slice(0, 5).map(([dept, val]) => {
+                  const maxVal = getMaxChartValue(charts.branch);
                   const percentage = Math.round((val / maxVal) * 100);
                   return (
-                    <div key={year} className="flex flex-col gap-1 text-xs">
+                    <div key={dept} className="flex flex-col gap-1 text-xs">
                       <div className="flex justify-between text-white/70">
-                        <span className="font-semibold">{year} Year</span>
+                        <span className="font-semibold truncate">{dept}</span>
                         <span className="font-mono">{val}</span>
                       </div>
                       <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
@@ -204,48 +214,54 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* Filter Controls & List Table */}
+        {/* Data list filter bar desk */}
         <div className="glass-card p-6 border border-white/5 flex flex-col gap-6">
-          
-          {/* Header query filters */}
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+            
             {/* Search Input */}
-            <div className="relative w-full lg:max-w-sm">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4" />
+            <div className="relative flex-1">
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-white/30" />
+              </span>
               <input
                 type="text"
-                placeholder="Search by student name, register no..."
+                placeholder="Search candidate name, email, register number, or app ID..."
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-white/20 focus:outline-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-brand-gold/30"
               />
             </div>
 
-            <div className="flex flex-wrap gap-3 w-full lg:w-auto justify-end">
-              {/* Domain select */}
-              <select
-                value={selectedDomain}
-                onChange={(e) => { setSelectedDomain(e.target.value); setPage(1); }}
-                className="bg-white/5 border border-white/10 text-white text-xs px-3 py-2 rounded-xl focus:outline-none"
-              >
-                <option value="All" className="bg-brand-brown">All Domains</option>
-                {domainsList.slice(1).map(d => (
-                  <option key={d} value={d} className="bg-brand-brown">{d}</option>
-                ))}
-              </select>
+            {/* Domain Dropdown */}
+            <div className="flex gap-4 items-center">
+              <div className="flex flex-col gap-1 text-xs">
+                <label className="text-[9px] uppercase tracking-wider text-white/40 font-bold">Filter Domain</label>
+                <select
+                  value={selectedDomain}
+                  onChange={(e) => { setSelectedDomain(e.target.value); setPage(1); }}
+                  className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none text-xs"
+                >
+                  {domainsList.map((d) => (
+                    <option key={d} value={d} className="bg-brand-brown text-white">{d}</option>
+                  ))}
+                </select>
+              </div>
 
-              {/* Status select */}
-              <select
-                value={selectedStatus}
-                onChange={(e) => { setSelectedStatus(e.target.value); setPage(1); }}
-                className="bg-white/5 border border-white/10 text-white text-xs px-3 py-2 rounded-xl focus:outline-none"
-              >
-                <option value="All" className="bg-brand-brown">All Statuses</option>
-                {statusList.slice(1).map(s => (
-                  <option key={s} value={s} className="bg-brand-brown">{s}</option>
-                ))}
-              </select>
+              {/* Status Dropdown */}
+              <div className="flex flex-col gap-1 text-xs">
+                <label className="text-[9px] uppercase tracking-wider text-white/40 font-bold">Filter Status</label>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => { setSelectedStatus(e.target.value); setPage(1); }}
+                  className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none text-xs"
+                >
+                  {statusList.map((st) => (
+                    <option key={st} value={st} className="bg-brand-brown text-white">{st}</option>
+                  ))}
+                </select>
+              </div>
             </div>
+
           </div>
 
           {/* Table Data Grid */}
@@ -258,8 +274,9 @@ const AdminDashboard = () => {
                   </th>
                   <th className="py-4 px-4">Candidate Details</th>
                   <th className="py-4 px-4">Domain</th>
-                  <th className="py-4 px-4">Resume Score</th>
-                  <th className="py-4 px-4">Interview Score</th>
+                  <th className="py-4 px-4 cursor-pointer hover:text-white" onClick={() => toggleSort('juryScore.overallRating')}>
+                    Interview Score <ArrowUpDown className="inline w-3 h-3 ml-1" />
+                  </th>
                   <th className="py-4 px-4 cursor-pointer hover:text-white" onClick={() => toggleSort('createdAt')}>
                     Date Applied <ArrowUpDown className="inline w-3 h-3 ml-1" />
                   </th>
@@ -282,7 +299,6 @@ const AdminDashboard = () => {
                         {app.preferredDomain}
                       </span>
                     </td>
-                    <td className="py-4 px-4 font-mono text-white/70 font-semibold">{app.resumeScore || 0}/100</td>
                     <td className="py-4 px-4 font-mono text-brand-gold font-bold">
                       {app.juryScore?.overallRating ? `${app.juryScore.overallRating}/10` : 'N/A'}
                     </td>

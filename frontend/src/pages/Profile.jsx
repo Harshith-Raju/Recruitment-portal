@@ -270,6 +270,21 @@ const Profile = () => {
                   </button>
                 </div>
               )}
+
+              {appStatus && appStatus.status === 'Rejected' && (
+                <div className="p-5 mt-4 bg-red-500/10 border border-red-500/25 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+                  <div>
+                    <h4 className="text-sm font-bold text-white">Application Update</h4>
+                    <p className="text-xs text-white/60 mt-1">Your application for {appStatus.preferredDomain} was not selected. You are eligible to apply for another role!</p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/careers')}
+                    className="px-4 py-2.5 bg-brand-gold hover:bg-brand-gold-light text-brand-brown-dark font-bold text-xs rounded-lg cursor-pointer flex-shrink-0"
+                  >
+                    Apply for Another Role
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Task Submission Module (Phase 8) */}

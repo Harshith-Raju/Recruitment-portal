@@ -9,144 +9,206 @@ import { useNotification } from '../context/NotificationContext';
 const initialRoles = [
   {
     id: 'career-1',
-    title: 'AI / Machine Learning Engineer',
-    domain: 'AI',
-    icon: <Cpu className="w-5 h-5 text-brand-gold" />,
-    openings: 3,
+    title: 'Web developers',
+    domain: 'Web Development',
+    icon: <Layout className="w-5 h-5 text-brand-gold" />,
+    openings: 4,
     deadline: 'Aug 28, 2026',
-    description: 'Work on incorporating LLMs, regression models, and neural nets into club assessment tools and local college research portals.',
+    description: 'Build and maintain web portals, application pages, and user dashboards for coding club events.',
     responsibilities: [
-      'Preprocess datasets from campus programming scores.',
-      'Deploy inference servers using FastAPI and Docker.',
-      'Fine-tune classification algorithms for auto-grading code submissions.'
+      'Implement responsive layouts using HTML, CSS, and JavaScript.',
+      'Connect frontend views to backend APIs.',
+      'Maintain code repositories and deploy web apps.'
     ],
     requirements: [
-      'Basic knowledge of PyTorch or TensorFlow.',
-      'Familiarity with Python, pandas, and numpy.',
-      'Understanding of basic training cycles and loss functions.'
+      'Basic knowledge of React or simple Javascript.',
+      'Understanding of HTML5, CSS3, and browser DOM.',
+      'Experience using Git and GitHub.'
     ]
   },
   {
     id: 'career-2',
-    title: 'MERN Stack Web Developer',
-    domain: 'Web Development',
-    icon: <Layout className="w-5 h-5 text-brand-gold" />,
-    openings: 5,
-    deadline: 'Aug 25, 2026',
-    description: 'Collaborate with the web operations team to develop the recruitment systems, hackathon dashboards, and contest scoreboards.',
+    title: 'Technical trainers',
+    domain: 'Training',
+    icon: <Cpu className="w-5 h-5 text-brand-gold" />,
+    openings: 3,
+    deadline: 'Aug 28, 2026',
+    description: 'Prepare tutorial sessions, lecture materials, and training bootcamps for junior batches.',
     responsibilities: [
-      'Write server-side APIs in Node.js & Express.',
-      'Design clean UI layouts in React with Tailwind CSS.',
-      'Implement authentication routes and secure sessions using JWT and cookies.'
+      'Explain core coding concepts to junior members.',
+      'Create learning pathways for different development streams.',
+      'Help resolve technical doubts during workshops.'
     ],
     requirements: [
-      'Prior hands-on experience with modern Javascript / ES6+.',
-      'Understanding of React hooks and context variables.',
-      'Basic database designing skills (MongoDB / SQL).'
+      'Good communication and teaching skills.',
+      'Solid command over at least one language (C++, Python, Java).',
+      'Knowledge of basic algorithms and data structures.'
     ]
   },
   {
     id: 'career-3',
-    title: 'Flutter App Developer',
-    domain: 'App Development',
-    icon: <Smartphone className="w-5 h-5 text-brand-gold" />,
-    openings: 2,
-    deadline: 'Aug 30, 2026',
-    description: 'Create the official mobile application for the coding club, ensuring push alerts for hackathons reach every student immediately.',
+    title: 'Competetive coding',
+    domain: 'Competitive Programming',
+    icon: <Trophy className="w-5 h-5 text-brand-gold" />,
+    openings: 5,
+    deadline: 'Aug 28, 2026',
+    description: 'Participate in programming contests, solve complex problems, and coach teams for events like ICPC.',
     responsibilities: [
-      'Maintain clean state management structures using Provider or Bloc.',
-      'Establish cross-platform compatibility across Android & iOS.',
-      'Integrate local SQLite storage and REST clients.'
+      'Solve algorithmic problems on platforms like Codeforces or CodeChef.',
+      'Analyze solution complexities (Time & Space).',
+      'Host practice coding rounds and explain editorials.'
     ],
     requirements: [
-      'Knowledge of Dart scripting.',
-      'Understanding of Material design guidelines.',
-      'Prior flutter project uploaded on GitHub.'
+      'Strong grasp of Data Structures and Algorithms.',
+      'Proficiency in C++ STL, Java Collections, or Python.',
+      'Analytical problem-solving mindset.'
     ]
   },
   {
     id: 'career-4',
-    title: 'Competitive Programming Coach',
-    domain: 'Competitive Programming',
-    icon: <Trophy className="w-5 h-5 text-brand-gold" />,
-    openings: 4,
-    deadline: 'Aug 22, 2026',
-    description: 'Formulate algorithmic code reviews, lead training batches for ICPC / CodeChef tournaments, and maintain our daily leaderboard.',
+    title: 'Poster designers',
+    domain: 'Design Team',
+    icon: <Paintbrush className="w-5 h-5 text-brand-gold" />,
+    openings: 3,
+    deadline: 'Aug 28, 2026',
+    description: 'Design visual posters, brochures, and layouts representing our club branding for events.',
     responsibilities: [
-      'Curate problem sheets for junior batches.',
-      'Create editorials explaining complex tree and graph approaches.',
-      'Conduct mock contests on platforms like Codeforces.'
+      'Create digital posters and branding assets.',
+      'Ensure design consistency across all digital media.',
+      'Work alongside event managers for promotional materials.'
     ],
     requirements: [
-      'Active Codeforces rating (1400+) or CodeChef 4-star+ preferred.',
-      'Deep command of C++ STL or Java collections.',
-      'Thorough knowledge of greedy methods, segment trees, and DP.'
+      'Familiarity with Figma, Canva, or Photoshop.',
+      'Good understanding of typography, colors, and layout.',
+      'Portfolio of design concepts.'
     ]
   },
   {
     id: 'career-5',
-    title: 'UI/UX Brand Designer',
-    domain: 'Design Team',
+    title: 'Video editors',
+    domain: 'Media',
     icon: <Paintbrush className="w-5 h-5 text-brand-gold" />,
     openings: 2,
-    deadline: 'Aug 26, 2026',
-    description: 'Design premium graphic assets, posters, social media banners, and landing layouts that represent the premium brand of SRKR Coding Club.',
+    deadline: 'Aug 28, 2026',
+    description: 'Produce high-quality teaser clips, post-event reels, and informational videos.',
     responsibilities: [
-      'Draft UI mockups and design systems in Figma.',
-      'Create digital illustrations for club event launches.',
-      'Ensure high fidelity export matching the gold/brown aesthetics.'
+      'Trim, sequence, and polish raw video footage.',
+      'Add transitions, typography overlays, and audio tracks.',
+      'Optimize videos for social media sharing.'
     ],
     requirements: [
-      'Proficient portfolio demonstrating typography and space rules.',
-      'Expertise in Figma prototyping.'
+      'Basic knowledge of Premiere Pro, After Effects, or DaVinci.',
+      'Creative sense of video pacing and sound design.',
+      'Understanding of video formats and resolutions.'
     ]
   },
   {
     id: 'career-6',
-    title: 'Technical Writer & Copywriter',
+    title: 'Documentation',
     domain: 'Content Team',
     icon: <FileText className="w-5 h-5 text-brand-gold" />,
-    openings: 3,
-    deadline: 'Aug 24, 2026',
-    description: 'Produce clear event documentation, monthly tech newsletters, blog postings, and promotional scripts.',
+    openings: 2,
+    deadline: 'Aug 28, 2026',
+    description: 'Write reports, official letters, event summaries, and detailed logs of coding contests.',
     responsibilities: [
-      'Draft LinkedIn announcements for hackathon winners.',
-      'Author technical tutorials and guides for junior members.',
-      'Edit scripts for promotional videos.'
+      'Draft official event descriptions and feedback reports.',
+      'Prepare meeting minutes and project files.',
+      'Format user manuals and guides.'
     ],
     requirements: [
-      'Excellent written English grammar.',
-      'Capable of summarizing complex technological steps simply.'
+      'Excellent writing and grammar skills.',
+      'Ability to translate complex tech steps into readable text.',
+      'Familiarity with Markdown, Google Docs, or Word.'
     ]
   },
   {
     id: 'career-7',
-    title: 'Lead Organizer & Coordinator',
-    domain: 'Event Management',
-    icon: <CalendarRange className="w-5 h-5 text-brand-gold" />,
-    openings: 5,
-    deadline: 'Aug 29, 2026',
-    description: 'Handle operations for hackathons and inter-college events, ensuring smooth execution from registry check-ins to panel grading.',
+    title: 'Public relations',
+    domain: 'Public Relations',
+    icon: <Users className="w-5 h-5 text-brand-gold" />,
+    openings: 3,
+    deadline: 'Aug 28, 2026',
+    description: 'Build relationships with other student clubs, reach out to departments, and communicate events.',
     responsibilities: [
-      'Coordinate hospitality and logistics for visiting delegates.',
-      'Liaise with college administration for campus hall allotments.',
-      'Orchestrate the offline volunteers task-force.'
+      'Coordinate external communications and student notices.',
+      'Liaise with college staff and students.',
+      'Address queries regarding registrations and listings.'
     ],
     requirements: [
-      'Strong leadership and communication qualities.',
-      'Prior experience volunteering or organizing college fests.'
+      'Strong interpersonal and verbal communication skills.',
+      'Confidence in public speaking.',
+      'Basic management and networking skills.'
+    ]
+  },
+  {
+    id: 'career-8',
+    title: 'Sponsorships and collaboration',
+    domain: 'Corporate Relations',
+    icon: <Users className="w-5 h-5 text-brand-gold" />,
+    openings: 3,
+    deadline: 'Aug 28, 2026',
+    description: 'Interact with industry sponsors, secure funding, and coordinate cross-club collaborations.',
+    responsibilities: [
+      'Pitch event benefits to corporate brands.',
+      'Arrange resources, sponsor stalls, and coordinate branding.',
+      'Maintain liaison with partner organizations.'
+    ],
+    requirements: [
+      'Persuasive negotiation and marketing skills.',
+      'Professional correspondence capabilities (emails, proposals).',
+      'Detail-oriented and reliable.'
+    ]
+  },
+  {
+    id: 'career-9',
+    title: 'Event management & promotions',
+    domain: 'Event Management',
+    icon: <CalendarRange className="w-5 h-5 text-brand-gold" />,
+    openings: 4,
+    deadline: 'Aug 28, 2026',
+    description: 'Organize logistics, arrange classroom venues, manage registrations, and promote hackathons.',
+    responsibilities: [
+      'Plan operational timelines and manage event volunteers.',
+      'Execute promotional campaigns around the college campus.',
+      'Oversee stage setup, audio visual tools, and guest welcoming.'
+    ],
+    requirements: [
+      'Organized and action-oriented personality.',
+      'Prior volunteering or group project experience.',
+      'Ability to work under pressure and coordinate teams.'
+    ]
+  },
+  {
+    id: 'career-10',
+    title: 'Digital Marketing/ Content writing',
+    domain: 'Content Team',
+    icon: <FileText className="w-5 h-5 text-brand-gold" />,
+    openings: 3,
+    deadline: 'Aug 28, 2026',
+    description: 'Write engaging copy, manage social media profiles, and promote club hackathons digitally.',
+    responsibilities: [
+      'Write social media descriptions and event banners (LinkedIn, Instagram).',
+      'Track reach of post campaigns.',
+      'Maintain active posting schedules.'
+    ],
+    requirements: [
+      'Creative copywriting skills.',
+      'Understanding of social media algorithms.',
+      'Familiarity with digital tools (Canva, analytics).'
     ]
   }
 ];
 
 const domainsList = [
   'All',
-  'AI',
   'Web Development',
-  'App Development',
+  'Training',
   'Competitive Programming',
   'Design Team',
+  'Media',
   'Content Team',
+  'Public Relations',
+  'Corporate Relations',
   'Event Management'
 ];
 

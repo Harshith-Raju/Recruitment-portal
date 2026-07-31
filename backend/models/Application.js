@@ -25,6 +25,8 @@ const applicationSchema = new mongoose.Schema(
       whyJoin: { type: String, required: true },
       experience: { type: String, required: true },
       timeManagement: { type: String, required: true },
+      otherClubExperience: { type: String, default: '' },
+      leaveIfOtherOffer: { type: String, default: '' },
     },
     projects: [
       {
@@ -44,9 +46,22 @@ const applicationSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    alternativeDomain1: {
+      type: String,
+      default: '',
+    },
+    alternativeDomain2: {
+      type: String,
+      default: '',
+    },
     resumeUrl: {
       type: String,
       required: true,
+    },
+    resumeFile: {
+      data: Buffer,
+      contentType: String,
+      filename: String,
     },
     status: {
       type: String,
@@ -64,7 +79,8 @@ const applicationSchema = new mongoose.Schema(
     interviewDetails: {
       date: { type: Date, default: null },
       time: { type: String, default: '' },
-      link: { type: String, default: '' },
+      pocName: { type: String, default: '' },
+      pocNumber: { type: String, default: '' },
       panelMembers: { type: String, default: '' },
     },
     taskDetails: {
@@ -90,5 +106,8 @@ const applicationSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+applicationSchema.index({ userId: 1 });
+applicationSchema.index({ applicationId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Application', applicationSchema);

@@ -26,7 +26,6 @@ const AdminCandidateDetails = () => {
 
   // Notes states
   const [adminNotes, setAdminNotes] = useState('');
-  const [resumeScore, setResumeScore] = useState(50);
   const [savingEval, setSavingEval] = useState(false);
 
   // Jury Score parameters
@@ -42,8 +41,8 @@ const AdminCandidateDetails = () => {
   // Interview Schedule Form
   const [interviewDate, setInterviewDate] = useState('');
   const [interviewTime, setInterviewTime] = useState('');
-  const [interviewLink, setInterviewLink] = useState('');
-  const [panelMembers, setPanelMembers] = useState('');
+  const [pocName, setPocName] = useState('');
+  const [pocNumber, setPocNumber] = useState('');
   const [scheduling, setScheduling] = useState(false);
 
   // Task Form
@@ -60,7 +59,6 @@ const AdminCandidateDetails = () => {
         if (match) {
           setApp(match);
           setAdminNotes(match.adminNotes || '');
-          setResumeScore(match.resumeScore || 50);
 
           // Jury panel parameters
           if (match.juryScore) {
@@ -76,8 +74,8 @@ const AdminCandidateDetails = () => {
           if (match.interviewDetails) {
             setInterviewDate(match.interviewDetails.date ? match.interviewDetails.date.split('T')[0] : '');
             setInterviewTime(match.interviewDetails.time || '');
-            setInterviewLink(match.interviewDetails.link || '');
-            setPanelMembers(match.interviewDetails.panelMembers || '');
+            setPocName(match.interviewDetails.pocName || '');
+            setPocNumber(match.interviewDetails.pocNumber || '');
           }
 
           if (match.taskDetails) {
@@ -103,11 +101,10 @@ const AdminCandidateDetails = () => {
     setSavingEval(true);
     try {
       await axios.post(`${API_URL}/applications/admin/${id}/notes-score`, {
-        adminNotes,
-        resumeScore: parseInt(resumeScore)
+        adminNotes
       });
-      setApp(prev => ({ ...prev, adminNotes, resumeScore: parseInt(resumeScore) }));
-      showToast('Evaluation notes and score updated!', 'success');
+      setApp(prev => ({ ...prev, adminNotes }));
+      showToast('Evaluation notes updated!', 'success');
     } catch (err) {
       console.error(err);
       showToast('Failed to save evaluation.', 'error');
@@ -153,7 +150,7 @@ const AdminCandidateDetails = () => {
 
   const scheduleInterview = async (e) => {
     e.preventDefault();
-    if (!interviewDate || !interviewTime || !interviewLink) {
+    if (!interviewDate || !interviewTime || !pocName || !pocNumber) {
       showToast('Please fill out all schedule fields.', 'warning');
       return;
     }
@@ -162,8 +159,8 @@ const AdminCandidateDetails = () => {
       const res = await axios.post(`${API_URL}/applications/admin/${id}/schedule`, {
         date: interviewDate,
         time: interviewTime,
-        link: interviewLink,
-        panelMembers
+        pocName,
+        pocNumber
       });
       setApp(prev => ({ ...prev, status: 'Interview Scheduled', interviewDetails: res.data.application.interviewDetails }));
       showToast('Interview slotted and student notified!', 'success');
@@ -282,6 +279,24 @@ const AdminCandidateDetails = () => {
                 )}
               </div>
 
+              <div className="border-t border-white/5 pt-4 flex flex-col gap-3">
+                <span className="text-[10px] text-white/40 uppercase font-bold font-display">Domain Preferences</span>
+                <div className="grid grid-cols-3 gap-3 text-xs">
+                  <div className="bg-brand-gold/10 border border-brand-gold/20 p-3 rounded-xl flex flex-col gap-1 text-center">
+                    <span className="text-[9px] uppercase tracking-wider text-brand-gold font-bold">Preferred</span>
+                    <span className="font-bold text-white truncate">{app?.preferredDomain}</span>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 p-3 rounded-xl flex flex-col gap-1 text-center">
+                    <span className="text-[9px] uppercase tracking-wider text-white/40 font-bold">Backup 1</span>
+                    <span className="font-bold text-white/80 truncate">{app?.alternativeDomain1 || 'N/A'}</span>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 p-3 rounded-xl flex flex-col gap-1 text-center">
+                    <span className="text-[9px] uppercase tracking-wider text-white/40 font-bold">Backup 2</span>
+                    <span className="font-bold text-white/80 truncate">{app?.alternativeDomain2 || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Skills */}
               <div className="flex flex-col gap-1.5 mt-2">
                 <span className="text-[10px] text-white/40 uppercase font-bold">Skills Specified</span>
@@ -314,6 +329,14 @@ const AdminCandidateDetails = () => {
                 <div className="flex flex-col gap-1">
                   <span className="text-[10px] text-brand-gold uppercase font-bold font-display">How do you balance academics and club activities?</span>
                   <p className="text-white/70 leading-relaxed bg-black/20 p-3 rounded-xl border border-white/5 mt-1">{app?.answers?.timeManagement || 'No response provided.'}</p>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] text-brand-gold uppercase font-bold font-display">Have you previous experience in any another club?</span>
+                  <p className="text-white/70 leading-relaxed bg-black/20 p-3 rounded-xl border border-white/5 mt-1">{app?.answers?.otherClubExperience || 'No response provided.'}</p>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] text-brand-gold uppercase font-bold font-display">If you have offer to get in other club would you leave this?</span>
+                  <p className="text-white/70 leading-relaxed bg-black/20 p-3 rounded-xl border border-white/5 mt-1">{app?.answers?.leaveIfOtherOffer || 'No response provided.'}</p>
                 </div>
               </div>
             </div>
@@ -403,36 +426,20 @@ const AdminCandidateDetails = () => {
               </div>
             </div>
 
-            {/* Resume Score & Remarks */}
+            {/* Evaluation Remarks */}
             <div className="glass-card p-6 border border-white/5 flex flex-col gap-5">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">Remarks & Initial Scoring</h3>
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider">Evaluation Remarks</h3>
               
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] text-white/40 uppercase font-bold">Resume Score (1 - 100)</label>
-                <div className="flex items-center gap-4">
-                  <input
-                    type="range"
-                    min="1"
-                    max="100"
-                    value={resumeScore}
-                    onChange={(e) => setResumeScore(e.target.value)}
-                    className="w-full h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-brand-gold"
-                  />
-                  <span className="text-sm font-mono font-bold text-brand-gold">{resumeScore}/100</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] text-white/40 uppercase font-bold">Evaluation Remarks</label>
                 <textarea
-                  rows={4}
+                  rows={5}
                   placeholder="Record evaluation logs, candidate answers notes..."
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white placeholder-white/20 focus:outline-none"
                 />
               </div>
-
+            </div>
               <button
                 onClick={saveEvaluation}
                 disabled={savingEval}
@@ -616,26 +623,27 @@ const AdminCandidateDetails = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] uppercase text-white/50">Meeting Link (GMeet / Zoom)</label>
-                  <input
-                    type="url"
-                    placeholder="https://meet.google.com/..."
-                    value={interviewLink}
-                    onChange={(e) => setInterviewLink(e.target.value)}
-                    className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] uppercase text-white/50">Panel Members</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Vinay, Lakshmi"
-                    value={panelMembers}
-                    onChange={(e) => setPanelMembers(e.target.value)}
-                    className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[9px] uppercase text-white/50">Point of Contact Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Vinay"
+                      value={pocName}
+                      onChange={(e) => setPocName(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[9px] uppercase text-white/50">POC Mobile Number</label>
+                    <input
+                      type="tel"
+                      placeholder="e.g. +91 9876543210"
+                      value={pocNumber}
+                      onChange={(e) => setPocNumber(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none"
+                    />
+                  </div>
                 </div>
 
                 <button
@@ -654,47 +662,53 @@ const AdminCandidateDetails = () => {
                 <CheckSquare className="w-4 h-4 text-brand-gold" /> Assign Coding Challenge
               </h3>
               
-              <form onSubmit={assignTask} className="flex flex-col gap-4 text-xs">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] uppercase text-white/50">Task Title</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Frontend Dashboard Integration"
-                    value={taskTitle}
-                    onChange={(e) => setTaskTitle(e.target.value)}
-                    className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none"
-                  />
+              {app?.status === 'Task Submitted' ? (
+                <div className="p-4 bg-brand-gold/10 border border-brand-gold/20 rounded-xl text-center">
+                  <p className="text-xs font-medium text-brand-gold">The candidate has completed and submitted their assignment. No additional tasks can be issued.</p>
                 </div>
+              ) : (
+                <form onSubmit={assignTask} className="flex flex-col gap-4 text-xs">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[9px] uppercase text-white/50">Task Title</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Frontend Dashboard Integration"
+                      value={taskTitle}
+                      onChange={(e) => setTaskTitle(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none"
+                    />
+                  </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] uppercase text-white/50">Task Description</label>
-                  <textarea
-                    rows={3}
-                    placeholder="Provide details about requirements..."
-                    value={taskDesc}
-                    onChange={(e) => setTaskDesc(e.target.value)}
-                    className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none resize-none"
-                  />
-                </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[9px] uppercase text-white/50">Task Description</label>
+                    <textarea
+                      rows={3}
+                      placeholder="Provide details about requirements..."
+                      value={taskDesc}
+                      onChange={(e) => setTaskDesc(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white focus:outline-none resize-none"
+                    />
+                  </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] uppercase text-white/50">Deadline Date</label>
-                  <input
-                    type="date"
-                    value={taskDeadline}
-                    onChange={(e) => setTaskDeadline(e.target.value)}
-                    className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white focus:outline-none"
-                  />
-                </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[9px] uppercase text-white/50">Deadline Date</label>
+                    <input
+                      type="date"
+                      value={taskDeadline}
+                      onChange={(e) => setTaskDeadline(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white focus:outline-none"
+                    />
+                  </div>
 
-                <button
-                  type="submit"
-                  disabled={assigningTask}
-                  className="w-full py-2.5 bg-brand-gold hover:bg-brand-gold-light text-brand-brown-dark font-bold text-xs rounded-xl shadow-md cursor-pointer disabled:opacity-50"
-                >
-                  {assigningTask ? 'Assigning...' : 'Assign Coding Task & Update Timeline'}
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    disabled={assigningTask}
+                    className="w-full py-2.5 bg-brand-gold hover:bg-brand-gold-light text-brand-brown-dark font-bold text-xs rounded-xl shadow-md cursor-pointer disabled:opacity-50"
+                  >
+                    {assigningTask ? 'Assigning...' : 'Assign Coding Task & Update Timeline'}
+                  </button>
+                </form>
+              )}
             </div>
 
           </div>
@@ -702,7 +716,7 @@ const AdminCandidateDetails = () => {
         </div>
 
       </div>
-    </div>
+    
   );
 };
 

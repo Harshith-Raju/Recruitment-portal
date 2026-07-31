@@ -16,12 +16,14 @@ const steps = [
 ];
 
 const domainsList = [
-  'AI',
   'Web Development',
-  'App Development',
+  'Training',
   'Competitive Programming',
   'Design Team',
+  'Media',
   'Content Team',
+  'Public Relations',
+  'Corporate Relations',
   'Event Management'
 ];
 
@@ -45,6 +47,8 @@ const Apply = () => {
   } = useForm({
     defaultValues: {
       preferredDomain: '',
+      alternativeDomain1: '',
+      alternativeDomain2: '',
       github: '',
       linkedin: '',
       portfolio: '',
@@ -52,6 +56,8 @@ const Apply = () => {
       whyJoin: '',
       experience: '',
       timeManagement: '',
+      otherClubExperience: '',
+      leaveIfOtherOffer: '',
       projects: [{ title: '', description: '', link: '' }],
       hackathons: [{ name: '', role: '', achievement: '' }],
     },
@@ -113,6 +119,8 @@ const Apply = () => {
     try {
       const formData = new FormData();
       formData.append('preferredDomain', data.preferredDomain);
+      formData.append('alternativeDomain1', data.alternativeDomain1);
+      formData.append('alternativeDomain2', data.alternativeDomain2);
       
       const personalDetails = {
         github: data.github,
@@ -129,6 +137,8 @@ const Apply = () => {
         whyJoin: data.whyJoin,
         experience: data.experience,
         timeManagement: data.timeManagement,
+        otherClubExperience: data.otherClubExperience,
+        leaveIfOtherOffer: data.leaveIfOtherOffer,
       };
       formData.append('answers', JSON.stringify(answers));
 
@@ -249,6 +259,36 @@ const Apply = () => {
                   ))}
                 </select>
                 {errors.preferredDomain && <span className="text-red-400 text-[10px]">{errors.preferredDomain.message}</span>}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-bold text-white/70 uppercase tracking-wide">Backup Option 1</label>
+                  <select
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-gold/50"
+                    {...register('alternativeDomain1', { required: 'Please select alternative option 1' })}
+                  >
+                    <option value="" disabled className="bg-brand-brown text-white">-- Select Backup Option 1 --</option>
+                    {domainsList.filter(d => d !== watch('preferredDomain')).map((d) => (
+                      <option key={d} value={d} className="bg-brand-brown text-white">{d}</option>
+                    ))}
+                  </select>
+                  {errors.alternativeDomain1 && <span className="text-red-400 text-[10px]">{errors.alternativeDomain1.message}</span>}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-bold text-white/70 uppercase tracking-wide">Backup Option 2</label>
+                  <select
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-gold/50"
+                    {...register('alternativeDomain2', { required: 'Please select alternative option 2' })}
+                  >
+                    <option value="" disabled className="bg-brand-brown text-white">-- Select Backup Option 2 --</option>
+                    {domainsList.filter(d => d !== watch('preferredDomain') && d !== watch('alternativeDomain1')).map((d) => (
+                      <option key={d} value={d} className="bg-brand-brown text-white">{d}</option>
+                    ))}
+                  </select>
+                  {errors.alternativeDomain2 && <span className="text-red-400 text-[10px]">{errors.alternativeDomain2.message}</span>}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -467,6 +507,28 @@ const Apply = () => {
                   {...register('timeManagement', { required: 'Please specify details' })}
                 />
                 {errors.timeManagement && <span className="text-red-400 text-[10px]">{errors.timeManagement.message}</span>}
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-white/70 uppercase tracking-wide">Have you previous experience in any another club?</label>
+                <textarea
+                  rows={3}
+                  placeholder="Details about active involvement, coordinator roles, or work done in other campus bodies..."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none resize-none"
+                  {...register('otherClubExperience', { required: 'Please specify details or write N/A' })}
+                />
+                {errors.otherClubExperience && <span className="text-red-400 text-[10px]">{errors.otherClubExperience.message}</span>}
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-white/70 uppercase tracking-wide">If you have offer to get in other club would you leave this?</label>
+                <textarea
+                  rows={3}
+                  placeholder="Share your perspective on multi-club memberships and commitment priorities..."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none resize-none"
+                  {...register('leaveIfOtherOffer', { required: 'Please specify your statement' })}
+                />
+                {errors.leaveIfOtherOffer && <span className="text-red-400 text-[10px]">{errors.leaveIfOtherOffer.message}</span>}
               </div>
 
               {/* Resume File Input */}

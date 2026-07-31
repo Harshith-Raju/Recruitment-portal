@@ -1,28 +1,9 @@
-const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
-const pdfParse = require('pdf-parse');
 const Application = require('../models/Application');
 const { sendRecruitmentEmail } = require('../utils/mailer');
 const { isDbConnected } = require('../config/db');
-
-// Check and configure Cloudinary
-const isCloudinaryConfigured = () => {
-  return (
-    process.env.CLOUDINARY_CLOUD_NAME &&
-    process.env.CLOUDINARY_API_KEY &&
-    process.env.CLOUDINARY_API_SECRET
-  );
-};
-
-if (isCloudinaryConfigured()) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-}
 
 // In-memory data store fallback
 let inMemoryApps = [];
@@ -41,83 +22,49 @@ const submitApplication = async (req, res) => {
     if (isDbConnected()) {
       const existingApp = await Application.findOne({ userId });
       if (existingApp) {
-        return res.status(400).json({ message: 'You have already submitted an application.' });
+        if (existingApp.status === 'Rejected') {
+          await Application.deleteOne({ _id: existingApp._id });
+        } else {
+          return res.status(400).json({ message: 'You have already submitted an active application.' });
+        }
       }
     } else {
-      const existingApp = inMemoryApps.find((a) => a.userId === userId);
-      if (existingApp) {
-        return res.status(400).json({ message: 'You have already submitted an application (in-memory).' });
+      const existingAppIndex = inMemoryApps.findIndex((a) => a.userId === userId);
+      if (existingAppIndex !== -1) {
+        if (inMemoryApps[existingAppIndex].status === 'Rejected') {
+          inMemoryApps.splice(existingAppIndex, 1);
+        } else {
+          return res.status(400).json({ message: 'You have already submitted an active application (in-memory).' });
+        }
       }
     }
 
     let resumeUrl = '';
+    let resumeFileData = null;
 
-    let resumeScore = 50;
-
-    // Upload logic
+    // Resume Document File Upload (Stored directly as binary in MongoDB)
     if (req.file) {
       try {
         const dataBuffer = fs.readFileSync(req.file.path);
-        const parsedPdf = await pdfParse(dataBuffer);
-        const text = parsedPdf.text || '';
-        
-        const cleanText = text.toLowerCase();
-        let parsedScore = 50;
-        
-        const skills = ['react', 'node', 'express', 'mongodb', 'python', 'javascript', 'html', 'css', 'java', 'c++', 'flutter', 'git', 'sql', 'figma', 'photoshop', 'illustrator', 'ui', 'ux', 'fastapi', 'flask', 'django', 'llm', 'nlp', 'pytorch', 'tensorflow', 'machine learning', 'deep learning', 'competitive programming', 'data structures', 'algorithms'];
-        const structures = ['education', 'cgpa', 'gpa', 'project', 'experience', 'certification', 'course', 'hackathon', 'achieve', 'award', 'leader', 'publish', 'patent'];
-        
-        let skillPoints = 0;
-        skills.forEach(s => {
-          if (cleanText.includes(s)) skillPoints += 5;
+        resumeFileData = {
+          data: dataBuffer,
+          contentType: req.file.mimetype || 'application/pdf',
+          filename: req.file.originalname,
+        };
+        // Safely unlink the system temp file immediately
+        try { fs.unlinkSync(req.file.path); } catch (err) {}
+      } catch (uploadErr) {
+        console.error('[DATABASE RESUME BUFFER READ ERROR]', uploadErr);
+        try { fs.unlinkSync(req.file.path); } catch (err) {}
+        return res.status(500).json({
+          message: `Failed to process uploaded resume file: ${uploadErr.message}`
         });
-        parsedScore += Math.min(skillPoints, 25);
-
-        let structPoints = 0;
-        structures.forEach(st => {
-          if (cleanText.includes(st)) structPoints += 5;
-        });
-        parsedScore += Math.min(structPoints, 20);
-
-        if (cleanText.includes('github.com')) parsedScore += 5;
-        if (cleanText.includes('linkedin.com')) parsedScore += 5;
-
-        resumeScore = Math.min(parsedScore, 100);
-        console.log(`[RESUME ANALYZER] Score calculated: ${resumeScore}`);
-      } catch (err) {
-        console.error('Resume text extraction failed:', err.message);
-      }
-
-      if (isCloudinaryConfigured()) {
-        try {
-          const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'resumes',
-            resource_type: 'raw', // Support PDFs
-          });
-          resumeUrl = result.secure_url;
-          // Delete temp file
-          fs.unlinkSync(req.file.path);
-        } catch (uploadErr) {
-          console.error('Cloudinary upload error:', uploadErr);
-          return res.status(500).json({ message: 'Failed to upload resume to Cloudinary.' });
-        }
-      } else {
-        // Fallback: Use simulated cloud url or local serving URL
-        const filename = `${Date.now()}-${req.file.originalname}`;
-        const uploadsDir = path.join(__dirname, '../uploads');
-        if (!fs.existsSync(uploadsDir)) {
-          fs.mkdirSync(uploadsDir, { recursive: true });
-        }
-        const targetPath = path.join(uploadsDir, filename);
-        fs.copyFileSync(req.file.path, targetPath);
-        fs.unlinkSync(req.file.path);
-        resumeUrl = `/uploads/${filename}`;
       }
     } else if (req.body.resumeUrl) {
       resumeUrl = req.body.resumeUrl; // Allow passing URL directly if not uploading raw files
     }
 
-    if (!resumeUrl) {
+    if (!resumeUrl && !resumeFileData) {
       return res.status(400).json({ message: 'Resume document is required.' });
     }
 
@@ -143,7 +90,14 @@ const submitApplication = async (req, res) => {
       : req.body.hackathons || [];
 
     const preferredDomain = req.body.preferredDomain;
+    const alternativeDomain1 = req.body.alternativeDomain1 || '';
+    const alternativeDomain2 = req.body.alternativeDomain2 || '';
     const applicationId = `SRKR-CC-2026-${generateShortId()}`;
+
+    // If uploading via form, route resumeUrl to our Mongo stream endpoint
+    if (resumeFileData) {
+      resumeUrl = `/api/applications/resume/${applicationId}`;
+    }
 
     let application;
     if (isDbConnected()) {
@@ -156,8 +110,11 @@ const submitApplication = async (req, res) => {
         projects,
         hackathons,
         preferredDomain,
+        alternativeDomain1,
+        alternativeDomain2,
         resumeUrl,
-        resumeScore,
+        resumeFile: resumeFileData,
+        resumeScore: 0,
       });
     } else {
       application = {
@@ -170,8 +127,11 @@ const submitApplication = async (req, res) => {
         projects,
         hackathons,
         preferredDomain,
+        alternativeDomain1,
+        alternativeDomain2,
         resumeUrl,
-        resumeScore,
+        resumeFile: resumeFileData,
+        resumeScore: 0,
         status: 'Pending',
         createdAt: new Date(),
       };
@@ -324,8 +284,21 @@ const getAdminApplications = async (req, res) => {
       totalCount = filtered.length;
 
       filtered.sort((a, b) => {
-        let valA = a[sortBy] || '';
-        let valB = b[sortBy] || '';
+        let valA, valB;
+        if (sortBy.includes('.')) {
+          const parts = sortBy.split('.');
+          valA = a;
+          valB = b;
+          for (const part of parts) {
+            valA = valA ? valA[part] : undefined;
+            valB = valB ? valB[part] : undefined;
+          }
+        } else {
+          valA = a[sortBy];
+          valB = b[sortBy];
+        }
+        valA = valA !== undefined ? valA : '';
+        valB = valB !== undefined ? valB : '';
         if (sortBy === 'createdAt') {
           valA = new Date(a.createdAt);
           valB = new Date(b.createdAt);
@@ -408,6 +381,17 @@ const getAdminStats = async (req, res) => {
       }
     });
 
+    const statusCounts = {
+      'Pending': pending,
+      'Under Review': underReview,
+      'Task Assigned': taskAssigned,
+      'Task Submitted': taskSubmitted,
+      'Interview Scheduled': interview,
+      'Interview Completed': interviewCompleted,
+      'Selected': selected,
+      'Rejected': rejected
+    };
+
     res.status(200).json({
       stats: {
         total,
@@ -423,7 +407,8 @@ const getAdminStats = async (req, res) => {
       charts: {
         domain: domainCounts,
         branch: branchCounts,
-        year: yearCounts
+        year: yearCounts,
+        status: statusCounts
       }
     });
   } catch (error) {
@@ -469,15 +454,25 @@ const updateApplicationStatus = async (req, res) => {
     }
 
     if (candidateEmail) {
-      await sendRecruitmentEmail(
-        candidateEmail,
-        'Status Update',
-        `Recruitment Status: ${status}`,
-        `<p>Hello,</p>
-         <p>Your recruitment stage has been updated by the evaluation board.</p>
-         <p><b>New Status:</b> <span style="color:#ffd700; font-weight:bold;">${status}</span></p>
-         <p>Track progress inside your candidate profile dashboard.</p>`
-      );
+      if (status === 'Rejected') {
+        await sendRecruitmentEmail(
+          candidateEmail,
+          'Recruitment Update',
+          'Update on your Club Application',
+          `<p>Hello,</p>
+           <p>Thank you for your interest in the SRKR Coding Club. After careful evaluation of your profile and assessment, we regret to inform you that your application has not been selected for the next round at this time.</p>
+           <p>We appreciate your effort and encourage you to apply for other roles in the future.</p>`
+        );
+      } else if (status === 'Selected') {
+        await sendRecruitmentEmail(
+          candidateEmail,
+          'Recruitment Selection Update',
+          'Congratulations! Selected for SRKR Coding Club',
+          `<p>Hello,</p>
+           <p>We are thrilled to inform you that you have been selected to join the SRKR Coding Club core team!</p>
+           <p>Welcome aboard! We will reach out to you shortly with further details.</p>`
+        );
+      }
     }
 
     res.status(200).json({
@@ -491,7 +486,7 @@ const updateApplicationStatus = async (req, res) => {
 
 const saveAdminNotesAndScore = async (req, res) => {
   const { id } = req.params;
-  const { adminNotes, resumeScore } = req.body;
+  const { adminNotes } = req.body;
 
   try {
     let application;
@@ -501,7 +496,6 @@ const saveAdminNotesAndScore = async (req, res) => {
         return res.status(404).json({ message: 'Application not found' });
       }
       application.adminNotes = adminNotes !== undefined ? adminNotes : application.adminNotes;
-      application.resumeScore = resumeScore !== undefined ? resumeScore : application.resumeScore;
       await application.save();
     } else {
       application = inMemoryApps.find(a => a._id === id || a.id === id);
@@ -509,7 +503,6 @@ const saveAdminNotesAndScore = async (req, res) => {
         return res.status(404).json({ message: 'Application not found' });
       }
       application.adminNotes = adminNotes !== undefined ? adminNotes : application.adminNotes;
-      application.resumeScore = resumeScore !== undefined ? resumeScore : application.resumeScore;
     }
 
     res.status(200).json({
@@ -523,7 +516,7 @@ const saveAdminNotesAndScore = async (req, res) => {
 
 const scheduleInterview = async (req, res) => {
   const { id } = req.params;
-  const { date, time, link, panelMembers } = req.body;
+  const { date, time, pocName, pocNumber, panelMembers } = req.body;
 
   try {
     let application;
@@ -535,7 +528,7 @@ const scheduleInterview = async (req, res) => {
         return res.status(404).json({ message: 'Application not found' });
       }
       application.status = 'Interview Scheduled';
-      application.interviewDetails = { date, time, link, panelMembers };
+      application.interviewDetails = { date, time, pocName, pocNumber, panelMembers };
       await application.save();
       userId = application.userId;
     } else {
@@ -544,13 +537,13 @@ const scheduleInterview = async (req, res) => {
         return res.status(404).json({ message: 'Application not found' });
       }
       application.status = 'Interview Scheduled';
-      application.interviewDetails = { date, time, link, panelMembers };
+      application.interviewDetails = { date, time, pocName, pocNumber, panelMembers };
       userId = application.userId;
     }
 
     const notification = {
       title: 'Interview Scheduled',
-      message: `Your coding interview is set for ${new Date(date).toLocaleDateString()} at ${time}. Panel: ${panelMembers}. Link: ${link}`,
+      message: `Your coding interview is set for ${new Date(date).toLocaleDateString()} at ${time}. Panel: ${panelMembers}. Contact Person: ${pocName} (${pocNumber})`,
       type: 'warning',
       createdAt: new Date()
     };
@@ -588,9 +581,9 @@ const scheduleInterview = async (req, res) => {
          <p>Your technical interview round has been scheduled by the recruitment team.</p>
          <p><b>Date:</b> ${new Date(date).toLocaleDateString()}</p>
          <p><b>Time:</b> ${time}</p>
-         <p><b>Interviewers/Panel:</b> ${panelMembers}</p>
-         <p><b>Meeting Link:</b> <a href="${link}" style="color:#ffd700;" target="_blank">${link}</a></p>
-         <p>Please join the session on time.</p>`
+         <p>If you have any queries or messages, please get in touch with our Point of Contact (POC):</p>
+         <p><b>Contact Person:</b> ${pocName}</p>
+         <p><b>Mobile Number:</b> ${pocNumber}</p>`
       );
     }
 
@@ -616,6 +609,9 @@ const assignTask = async (req, res) => {
       if (!application) {
         return res.status(404).json({ message: 'Application not found' });
       }
+      if (application.status === 'Task Submitted') {
+        return res.status(400).json({ message: 'The candidate has already submitted their task. You cannot assign another task.' });
+      }
       application.status = 'Task Assigned';
       application.taskDetails = { title, description, deadline, submission: { githubLink: '', liveUrl: '', zipUrl: '' } };
       await application.save();
@@ -624,6 +620,9 @@ const assignTask = async (req, res) => {
       application = inMemoryApps.find(a => a._id === id || a.id === id);
       if (!application) {
         return res.status(404).json({ message: 'Application not found' });
+      }
+      if (application.status === 'Task Submitted') {
+        return res.status(400).json({ message: 'The candidate has already submitted their task. You cannot assign another task.' });
       }
       application.status = 'Task Assigned';
       application.taskDetails = { title, description, deadline, submission: { githubLink: '', liveUrl: '', zipUrl: '' } };
@@ -661,19 +660,7 @@ const assignTask = async (req, res) => {
       if (studentUser) candidateEmail = studentUser.email;
     }
 
-    if (candidateEmail) {
-      await sendRecruitmentEmail(
-        candidateEmail,
-        'Coding Task Assigned',
-        'Technical Assessment Challenge Assigned',
-        `<p>Hello,</p>
-         <p>You have been assigned a coding challenge as part of the screening round.</p>
-         <p><b>Task Title:</b> ${title}</p>
-         <p><b>Description:</b> ${description}</p>
-         <p><b>Submission Deadline:</b> ${new Date(deadline).toLocaleDateString()}</p>
-         <p>Please complete the task and upload your submission files directly in the profile dashboard.</p>`
-      );
-    }
+    // Task Assigned email notification removed as per request.
 
     res.status(200).json({
       message: 'Task assigned successfully!',
@@ -726,18 +713,7 @@ const submitStudentTask = async (req, res) => {
       if (studentUser) candidateEmail = studentUser.email;
     }
 
-    if (candidateEmail) {
-      await sendRecruitmentEmail(
-        candidateEmail,
-        'Coding Task Submitted',
-        'Technical Challenge Submission Received',
-        `<p>Hello,</p>
-         <p>Your coding challenge submission has been successfully received by the recruitment panel.</p>
-         <p><b>GitHub Repository:</b> <a href="${githubLink}" style="color:#ffd700;" target="_blank">${githubLink}</a></p>
-         <p><b>Live Project URL:</b> ${liveUrl ? `<a href="${liveUrl}" style="color:#ffd700;" target="_blank">${liveUrl}</a>` : 'Not specified'}</p>
-         <p>Our evaluation team will review your work shortly to slot your technical panel interview.</p>`
-      );
-    }
+    // Task Submitted email notification removed as per request.
 
     res.status(200).json({
       message: 'Task submitted successfully!',
@@ -816,6 +792,43 @@ const saveJuryEvaluation = async (req, res) => {
   }
 };
 
+const getResumeFile = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (isDbConnected()) {
+      // Find by id or applicationId
+      const application = await Application.findOne({
+        $or: [
+          { _id: mongoose.Types.ObjectId.isValid(id) ? id : new mongoose.Types.ObjectId() },
+          { applicationId: id }
+        ]
+      });
+
+      if (!application || !application.resumeFile || !application.resumeFile.data) {
+        return res.status(404).json({ message: 'Resume document not found in database.' });
+      }
+
+      res.set('Content-Type', application.resumeFile.contentType || 'application/pdf');
+      res.set('Content-Disposition', 'inline');
+      return res.send(application.resumeFile.data);
+    } else {
+      // InMemory fallback
+      const application = inMemoryApps.find(a => a._id === id || a.applicationId === id);
+      if (!application || !application.resumeFile || !application.resumeFile.data) {
+        return res.status(404).json({ message: 'Resume document not found in memory.' });
+      }
+
+      res.set('Content-Type', application.resumeFile.contentType || 'application/pdf');
+      res.set('Content-Disposition', 'inline');
+      return res.send(application.resumeFile.data);
+    }
+  } catch (error) {
+    console.error('[GET RESUME ERROR]', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   submitApplication,
   getApplicationStatus,
@@ -828,4 +841,5 @@ module.exports = {
   submitStudentTask,
   getStudentNotifications,
   saveJuryEvaluation,
+  getResumeFile,
 };

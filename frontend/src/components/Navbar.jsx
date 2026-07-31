@@ -1,12 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, X, Code2, ArrowRight, User } from 'lucide-react';
+import { Menu, X, Code2, ArrowRight, User, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'dark';
+  });
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      document.documentElement.classList.remove('light');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   const links = [
     { name: 'Home', path: '/' },
@@ -71,8 +90,16 @@ const Navbar = () => {
         ))}
       </div>
 
-      {/* Apply Button / User Indicator */}
-      <div className="hidden xl:block">
+      {/* Theme Toggle & Apply Button / User Indicator */}
+      <div className="hidden xl:flex items-center gap-4">
+        <button
+          onClick={toggleTheme}
+          className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-brand-gold hover:text-brand-gold-light transition-all duration-300 cursor-pointer flex items-center justify-center"
+          title="Toggle Light/Dark Theme"
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+
         {user ? (
           <NavLink
             to="/profile"
@@ -90,13 +117,23 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Mobile Menu Toggle */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="xl:hidden text-white hover:text-brand-gold p-2 transition-colors focus:outline-none"
-      >
-        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-      </button>
+      {/* Mobile Action Row */}
+      <div className="flex xl:hidden items-center gap-2">
+        <button
+          onClick={toggleTheme}
+          className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-brand-gold hover:text-brand-gold-light transition-all duration-300 cursor-pointer flex items-center justify-center"
+          title="Toggle Light/Dark Theme"
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="text-white hover:text-brand-gold p-2 transition-colors focus:outline-none"
+        >
+          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
 
       {/* Mobile Menu Dropdown */}
       <AnimatePresence>

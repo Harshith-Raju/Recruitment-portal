@@ -13,17 +13,16 @@ const {
   assignTask,
   submitStudentTask,
   getStudentNotifications,
-  saveJuryEvaluation
+  saveJuryEvaluation,
+  getResumeFile,
 } = require('../controllers/appController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
+const os = require('os');
 const router = express.Router();
 
-// Ensure temp upload folder exists
-const tempDir = path.join(__dirname, '../temp');
-if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir, { recursive: true });
-}
+// Use OS temporary folder to prevent OneDrive sync locking errors on Windows hosts
+const tempDir = os.tmpdir();
 
 // Multer Config
 const storage = multer.diskStorage({
@@ -36,7 +35,8 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'application/pdf') {
+  const fileExtension = path.extname(file.originalname).toLowerCase();
+  if (file.mimetype === 'application/pdf' || fileExtension === '.pdf') {
     cb(null, true);
   } else {
     cb(new Error('Only PDF resumes are allowed!'), false);
@@ -49,8 +49,17 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
 
-router.post('/submit', protect, upload.single('resume'), submitApplication);
+router.post('/submit', protect, (req, res, next) => {
+  upload.single('resume')(req, res, (err) => {
+    if (err) {
+      console.error('[MULTER UPLOAD ERROR]', err.message);
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+}, submitApplication);
 router.get('/status', protect, getApplicationStatus);
+router.get('/resume/:id', getResumeFile);
 
 // Admin Routes
 router.get('/admin/list', protect, adminOnly, getAdminApplications);

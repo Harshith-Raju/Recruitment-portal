@@ -57,19 +57,7 @@ const ResetPassword = () => {
           </p>
         </div>
 
-        {debugOtp && (
-          <div className="bg-brand-gold/10 border border-brand-gold/20 p-3 rounded-lg text-center">
-            <p className="text-xs text-brand-gold font-mono font-bold">
-              Debug Reset OTP: <span className="underline select-all">{debugOtp}</span>
-            </p>
-            <button
-              onClick={() => setValue('otp', debugOtp)}
-              className="text-[10px] text-white hover:text-brand-gold font-bold underline mt-1 block w-full"
-            >
-              Auto-fill OTP
-            </button>
-          </div>
-        )}
+
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {/* Email input (only if missing in navigation state) */}

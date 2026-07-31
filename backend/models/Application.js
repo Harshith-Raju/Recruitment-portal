@@ -108,6 +108,5 @@ const applicationSchema = new mongoose.Schema(
 );
 
 applicationSchema.index({ userId: 1 });
-applicationSchema.index({ applicationId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Application', applicationSchema);

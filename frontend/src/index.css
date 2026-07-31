@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-brown: #1e1311;
+  --color-brand-brown-dark: #120b0a;
+  --color-brand-brown-light: #2b1b17;
+  --color-brand-gold: #d4af37;
+  --color-brand-gold-light: #f4b400;
+  
+  --font-display: "Outfit", sans-serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #120b0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #2b1b17;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-brand-brown-dark);
+  color: #f3f4f6;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  border-radius: 1rem;
+}
+
+.glass-gold {
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.glass-white-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border-radius: 1.25rem;
+  color: #1e1311;
+}
+
+/* Glowing hover effects */
+.glow-hover:hover {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
+  border-color: rgba(212, 175, 55, 0.5);
+}

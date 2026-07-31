@@ -161,7 +161,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Sponsors Section */}
+      {/* Sponsors Section
       <section className="py-20 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12 text-center">
           <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-10 font-bold">
@@ -178,7 +178,7 @@ const Home = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

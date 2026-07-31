@@ -150,7 +150,7 @@ const submitApplication = async (req, res) => {
     }
 
     if (candidateEmail) {
-      await sendRecruitmentEmail(
+      sendRecruitmentEmail(
         candidateEmail,
         'Application Submitted',
         'Application Received Successfully',
@@ -158,9 +158,8 @@ const submitApplication = async (req, res) => {
          <p>Your application for the <b>SRKR Coding Club</b> has been successfully stored in our database.</p>
          <p><b>Application ID:</b> ${applicationId}</p>
          <p><b>Preferred Domain:</b> ${preferredDomain}</p>
-         <p><b>Resume Analyzer Score:</b> ${resumeScore}/100</p>
          <p>You can check the live tracking timeline status anytime by logging into your profile dashboard.</p>`
-      );
+      ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
     }
 
     res.status(201).json({
@@ -455,23 +454,23 @@ const updateApplicationStatus = async (req, res) => {
 
     if (candidateEmail) {
       if (status === 'Rejected') {
-        await sendRecruitmentEmail(
+        sendRecruitmentEmail(
           candidateEmail,
           'Recruitment Update',
           'Update on your Club Application',
           `<p>Hello,</p>
            <p>Thank you for your interest in the SRKR Coding Club. After careful evaluation of your profile and assessment, we regret to inform you that your application has not been selected for the next round at this time.</p>
            <p>We appreciate your effort and encourage you to apply for other roles in the future.</p>`
-        );
+        ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
       } else if (status === 'Selected') {
-        await sendRecruitmentEmail(
+        sendRecruitmentEmail(
           candidateEmail,
           'Recruitment Selection Update',
           'Congratulations! Selected for SRKR Coding Club',
           `<p>Hello,</p>
            <p>We are thrilled to inform you that you have been selected to join the SRKR Coding Club core team!</p>
            <p>Welcome aboard! We will reach out to you shortly with further details.</p>`
-        );
+        ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
       }
     }
 
@@ -573,7 +572,7 @@ const scheduleInterview = async (req, res) => {
     }
 
     if (candidateEmail) {
-      await sendRecruitmentEmail(
+      sendRecruitmentEmail(
         candidateEmail,
         'Interview Scheduled',
         'Technical Panel Interview Slotted',
@@ -584,7 +583,7 @@ const scheduleInterview = async (req, res) => {
          <p>If you have any queries or messages, please get in touch with our Point of Contact (POC):</p>
          <p><b>Contact Person:</b> ${pocName}</p>
          <p><b>Mobile Number:</b> ${pocNumber}</p>`
-      );
+      ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
     }
 
     res.status(200).json({

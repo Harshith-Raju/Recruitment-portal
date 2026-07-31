@@ -62,7 +62,7 @@ const Contact = () => {
                 <div>
                   <h4 className="font-bold text-white mb-1">Email Coordinates</h4>
                   <a href="mailto:codingclub@srkrec.edu.in" className="text-white/60 hover:text-brand-gold transition-colors">
-                    codingclub@srkrec.edu.in
+                    srkrcodingclubofficial@gmail.com
                   </a>
                 </div>
               </li>
@@ -72,7 +72,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-white mb-1">Phone Helpline</h4>
-                  <p className="text-white/60">+91 98765 43210</p>
+                  <p className="text-white/60">+91 8500216667 
+                   +91 7997266366</p>
                 </div>
               </li>
             </ul>
@@ -92,7 +93,7 @@ const Contact = () => {
                 <label className="text-xs font-bold text-white/80 uppercase tracking-wider">Full Name</label>
                 <input
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="Please Write Your Full Name"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-gold/50 transition-colors"
                   {...register('name', {
                     required: 'Name is required',
@@ -107,7 +108,7 @@ const Contact = () => {
                 <label className="text-xs font-bold text-white/80 uppercase tracking-wider">Email Address</label>
                 <input
                   type="email"
-                  placeholder="john@example.com"
+                  placeholder="Your mail @example.com"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-gold/50 transition-colors"
                   {...register('email', {
                     required: 'Email is required',

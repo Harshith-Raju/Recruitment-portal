@@ -119,11 +119,6 @@ NODE_ENV=production npm start
 
 ## Admin Access
 
-Default admin (change via env before first run):
-
-- Email: `admin@srkrec.edu.in` (or `ADMIN_EMAIL`)
-- Password: value of `ADMIN_PASSWORD`
-- Login at: `/admin/login`
 
 ## API Health Check
 
@@ -131,13 +126,3 @@ Default admin (change via env before first run):
 GET /api/health
 ```
 
-Returns DB connection status.
-
-## Troubleshooting
-
-| Issue | Fix |
-|-------|-----|
-| Emails not sending | Set `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` in `.env`. Check server logs for "SMTP verification failed". |
-| DB connection failed | Verify `MONGO_URI`. In production, app exits if DB is unreachable. |
-| Admin login denied | Ensure user has `isAdmin: true` in DB, or re-seed with correct `ADMIN_EMAIL`. |
-| CORS errors | Set `FRONTEND_URL` to your frontend origin in production. |

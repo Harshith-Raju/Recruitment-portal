@@ -16,11 +16,11 @@ const Footer = () => {
               <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <span className="font-display font-bold text-lg text-white">
-              SRKR <span className="text-brand-gold font-extrabold">CODING CLUB</span>
+              RECRUITMENT <span className="text-brand-gold font-extrabold">PORTAL</span>
             </span>
           </div>
           <p className="text-sm text-white/60 leading-relaxed">
-            Nurturing innovation, engineering excellence, and computer science leadership at SRKR Engineering College. Join us to shape your coding career.
+            Streamlining talent acquisition, evaluation, and engineering recruitment. Join us to showcase your software skills and launch your tech career.
           </p>
           <div className="flex gap-4 mt-2">
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full glass hover:bg-brand-gold hover:text-brand-brown-dark text-white/80 transition-colors">
@@ -59,9 +59,6 @@ const Footer = () => {
             <li>
               <NavLink to="/contact" className="text-white/60 hover:text-brand-gold transition-colors">Contact Support</NavLink>
             </li>
-            {/* <li>
-              <NavLink to="/admin/login" className="text-white/40 hover:text-brand-gold transition-colors font-mono text-[11px] uppercase tracking-wider">Admin Login</NavLink>
-            </li> */}
           </ul>
         </div>
 
@@ -70,7 +67,7 @@ const Footer = () => {
           <h4 className="font-display font-semibold text-white mb-6 text-sm uppercase tracking-wider">Opportunities</h4>
           <ul className="flex flex-col gap-3 text-sm">
             <li>
-              <NavLink to="/careers" className="text-white/60 hover:text-brand-gold transition-colors">Apply for Club Roles</NavLink>
+              <NavLink to="/careers" className="text-white/60 hover:text-brand-gold transition-colors">Apply for Team Roles</NavLink>
             </li>
           </ul>
         </div>
@@ -81,15 +78,15 @@ const Footer = () => {
           <ul className="flex flex-col gap-4 text-sm text-white/70">
             <li className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-brand-gold flex-shrink-0 mt-0.5" />
-              <span>SRKR Engineering College, Bhimavaram, Andhra Pradesh - 534204</span>
+              <span>Technology & Innovation Center, Main Campus</span>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="w-5 h-5 text-brand-gold flex-shrink-0" />
-              <a href="mailto:codingclub@srkrec.edu.in" className="hover:text-brand-gold transition-colors">srkrcodingclubofficial@gmail.com</a>
+              <a href="mailto:support@recruitmentportal.com" className="hover:text-brand-gold transition-colors">support@recruitmentportal.com</a>
             </li>
             <li className="flex items-center gap-3">
               <Phone className="w-5 h-5 text-brand-gold flex-shrink-0" />
-              <span>+91 8500216667</span>
+              <span>+1 (800) 555-0199</span>
             </li>
           </ul>
         </div>
@@ -97,8 +94,8 @@ const Footer = () => {
       </div>
 
       <div className="max-w-7xl mx-auto border-t border-white/5 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/40">
-        <p>© {currentYear} SRKR Coding Club. All Rights Reserved.</p>
-        <p className="font-mono">Designed & Developed by the Club Web Team</p>
+        <p>© {currentYear} Recruitment Portal. All Rights Reserved.</p>
+        <p className="font-mono">Designed & Developed for Engineering Excellence</p>
       </div>
     </footer>
   );

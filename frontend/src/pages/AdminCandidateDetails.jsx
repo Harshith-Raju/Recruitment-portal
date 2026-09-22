@@ -360,7 +360,7 @@ const AdminCandidateDetails = () => {
                   
                   <div className="flex flex-col gap-4 text-xs">
                     <div className="flex flex-col gap-1">
-                      <span className="text-[10px] text-brand-gold uppercase font-bold font-display">Why do you want to join SRKR Coding Club?</span>
+                      <span className="text-[10px] text-brand-gold uppercase font-bold font-display">Why do you want to join our organization?</span>
                       <p className="text-white/70 leading-relaxed bg-black/20 p-3 rounded-xl border border-white/5 mt-1">{app?.answers?.whyJoin || 'No response provided.'}</p>
                     </div>
                     <div className="flex flex-col gap-1">

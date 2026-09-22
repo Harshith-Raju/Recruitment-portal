@@ -477,7 +477,7 @@ const Apply = () => {
               <h3 className="font-display text-lg font-bold text-white border-l-4 border-brand-gold pl-3">Questions & Resume Upload</h3>
               
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-white/70 uppercase tracking-wide">Why do you want to join SRKR Coding Club?</label>
+                <label className="text-[10px] font-bold text-white/70 uppercase tracking-wide">Why do you want to join our organization?</label>
                 <textarea
                   rows={3}
                   placeholder="Explain your passion for learning and coding..."

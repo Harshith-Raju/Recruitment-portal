@@ -6,13 +6,13 @@ const { sendOTPEmail } = require('../utils/mailer');
 const { isDbConnected } = require('../config/db');
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'srkr_jwt_secret_key_12345', {
+  return jwt.sign({ id }, process.env.JWT_SECRET || 'recruitment_portal_jwt_secret_key_12345', {
     expiresIn: '30d',
   });
 };
 
 // In-memory fallback database
-const adminEmail = process.env.ADMIN_EMAIL || 'admin@srkrec.edu.in';
+const adminEmail = process.env.ADMIN_EMAIL || 'admin@recruitmentportal.com';
 const adminPassword = process.env.ADMIN_PASSWORD || 'adminpassword123';
 const adminSalt = bcrypt.genSaltSync(10);
 const hashedAdminPassword = bcrypt.hashSync(adminPassword, adminSalt);
@@ -20,8 +20,20 @@ let inMemoryUsers = [
   {
     _id: 'admin-user-id-0000',
     id: 'admin-user-id-0000',
-    name: 'Club Administrator',
-    email: adminEmail,
+    name: 'Portal Administrator',
+    email: 'admin@recruitmentportal.com',
+    password: hashedAdminPassword,
+    registerNo: 'ADMIN',
+    deptYear: 'Staff',
+    profilePicture: '',
+    isVerified: true,
+    isAdmin: true,
+  },
+  {
+    _id: 'admin-user-id-0001',
+    id: 'admin-user-id-0001',
+    name: 'Portal Administrator',
+    email: 'admin@srkrec.edu.in',
     password: hashedAdminPassword,
     registerNo: 'ADMIN',
     deptYear: 'Staff',

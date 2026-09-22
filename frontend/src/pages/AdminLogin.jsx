@@ -13,6 +13,7 @@ const AdminLogin = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -43,6 +44,30 @@ const AdminLogin = () => {
           <p className="text-xs text-white/50 mt-1">Authorized access only. Sign in with admin credentials.</p>
         </div>
 
+        {/* Demo Credentials Box */}
+        <div className="bg-brand-gold/10 border border-brand-gold/30 rounded-xl p-4 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-brand-gold flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4" /> Demo Admin Account
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setValue('email', 'admin@recruitmentportal.com');
+                setValue('password', 'adminpassword123');
+                showToast('Demo admin credentials loaded!', 'info');
+              }}
+              className="text-[10px] font-bold bg-brand-gold text-brand-brown-dark px-2.5 py-1 rounded-md hover:bg-brand-gold-light transition-all cursor-pointer"
+            >
+              Auto-fill Admin
+            </button>
+          </div>
+          <div className="text-[11px] font-mono text-white/90 space-y-0.5">
+            <div><span className="text-white/50">Email:</span> admin@recruitmentportal.com</div>
+            <div><span className="text-white/50">Password:</span> adminpassword123</div>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
           {/* Email */}
           <div className="flex flex-col gap-1">
@@ -51,7 +76,7 @@ const AdminLogin = () => {
             </label>
             <input
               type="email"
-              placeholder="admin@srkrec.edu.in"
+              placeholder="admin@recruitmentportal.com"
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-brand-gold/50"
               {...register('email', {
                 required: 'Admin email is required',

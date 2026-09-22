@@ -92,7 +92,7 @@ const submitApplication = async (req, res) => {
     const preferredDomain = req.body.preferredDomain;
     const alternativeDomain1 = req.body.alternativeDomain1 || '';
     const alternativeDomain2 = req.body.alternativeDomain2 || '';
-    const applicationId = `SRKR-CC-2026-${generateShortId()}`;
+    const applicationId = `REC-2026-${generateShortId()}`;
 
     // If uploading via form, route resumeUrl to our Mongo stream endpoint
     if (resumeFileData) {
@@ -140,13 +140,20 @@ const submitApplication = async (req, res) => {
 
     // Send email confirmation
     let candidateEmail = '';
+    let candidateName = 'Candidate';
     if (isDbConnected()) {
       const applicantUser = await mongoose.model('User').findById(userId);
-      if (applicantUser) candidateEmail = applicantUser.email;
+      if (applicantUser) {
+        candidateEmail = applicantUser.email;
+        candidateName = applicantUser.name || candidateName;
+      }
     } else {
       const { inMemoryUsers } = require('./authController');
       const applicantUser = inMemoryUsers.find(u => u._id === userId || u.id === userId);
-      if (applicantUser) candidateEmail = applicantUser.email;
+      if (applicantUser) {
+        candidateEmail = applicantUser.email;
+        candidateName = applicantUser.name || candidateName;
+      }
     }
 
     if (candidateEmail) {
@@ -154,11 +161,15 @@ const submitApplication = async (req, res) => {
         candidateEmail,
         'Application Submitted',
         'Application Received Successfully',
-        `<p>Hello,</p>
-         <p>Your application for the <b>SRKR Coding Club</b> has been successfully stored in our database.</p>
+        `<p>Hello ${candidateName},</p>
+         <p>Thank you for submitting your application to our <b>Recruitment Portal</b>.</p>
          <p><b>Application ID:</b> ${applicationId}</p>
          <p><b>Preferred Domain:</b> ${preferredDomain}</p>
-         <p>You can check the live tracking timeline status anytime by logging into your profile dashboard.</p>`
+         <p>We have received your details successfully, and our review team will evaluate your application shortly.</p>
+         <p>You can monitor your application status anytime from your profile dashboard.</p>
+         
+         <p>Warm regards,</p>
+         <p>Recruitment Team</p>`
       ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
     }
 
@@ -442,34 +453,49 @@ const updateApplicationStatus = async (req, res) => {
     }
 
     let candidateEmail = '';
+    let candidateName = 'Candidate';
     let candidateUserId = application.userId;
     if (isDbConnected()) {
       const studentUser = await mongoose.model('User').findById(candidateUserId);
-      if (studentUser) candidateEmail = studentUser.email;
+      if (studentUser) {
+        candidateEmail = studentUser.email;
+        candidateName = studentUser.name || candidateName;
+      }
     } else {
       const { inMemoryUsers } = require('./authController');
       const studentUser = inMemoryUsers.find(u => u._id === candidateUserId || u.id === candidateUserId);
-      if (studentUser) candidateEmail = studentUser.email;
+      if (studentUser) {
+        candidateEmail = studentUser.email;
+        candidateName = studentUser.name || candidateName;
+      }
     }
 
     if (candidateEmail) {
       if (status === 'Rejected') {
         sendRecruitmentEmail(
           candidateEmail,
-          'Recruitment Update',
-          'Update on your Club Application',
-          `<p>Hello,</p>
-           <p>Thank you for your interest in the SRKR Coding Club. After careful evaluation of your profile and assessment, we regret to inform you that your application has not been selected for the next round at this time.</p>
-           <p>We appreciate your effort and encourage you to apply for other roles in the future.</p>`
+          'Application Update',
+          'Your Application Status Update',
+          `<p>Hello ${candidateName},</p>
+           <p>Thank you for applying through our <b>Recruitment Portal</b>.</p>
+           <p>After careful review, we regret to inform you that your application has not been selected to move forward at this time.</p>
+           <p>We appreciate your interest and encourage you to stay connected for future opportunities.</p>
+           
+           <p>Warm regards,</p>
+           <p>Recruitment Team</p>`
         ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
       } else if (status === 'Selected') {
         sendRecruitmentEmail(
           candidateEmail,
-          'Recruitment Selection Update',
-          'Congratulations! Selected for SRKR Coding Club',
-          `<p>Hello,</p>
-           <p>We are thrilled to inform you that you have been selected to join the SRKR Coding Club core team!</p>
-           <p>Welcome aboard! We will reach out to you shortly with further details.</p>`
+          'Selection Confirmation',
+          'Congratulations! You Have Been Selected',
+          `<p>Hello ${candidateName},</p>
+           <p>Congratulations! You have been selected by our recruitment team.</p>
+           <p>Our team will reach out to you shortly with the next steps and onboarding details.</p>
+           <p>Welcome aboard, and thank you for your enthusiasm.</p>
+           
+           <p>Warm regards,</p>
+           <p>Recruitment Team</p>`
         ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
       }
     }
@@ -562,27 +588,37 @@ const scheduleInterview = async (req, res) => {
 
     // Get candidate email
     let candidateEmail = '';
+    let candidateName = 'Candidate';
     if (isDbConnected()) {
       const studentUser = await mongoose.model('User').findById(userId);
-      if (studentUser) candidateEmail = studentUser.email;
+      if (studentUser) {
+        candidateEmail = studentUser.email;
+        candidateName = studentUser.name || candidateName;
+      }
     } else {
       const { inMemoryUsers } = require('./authController');
       const studentUser = inMemoryUsers.find(u => u._id === userId || u.id === userId);
-      if (studentUser) candidateEmail = studentUser.email;
+      if (studentUser) {
+        candidateEmail = studentUser.email;
+        candidateName = studentUser.name || candidateName;
+      }
     }
 
     if (candidateEmail) {
       sendRecruitmentEmail(
         candidateEmail,
         'Interview Scheduled',
-        'Technical Panel Interview Slotted',
-        `<p>Hello,</p>
-         <p>Your technical interview round has been scheduled by the recruitment team.</p>
+        'Your Technical Interview Details',
+        `<p>Hello ${candidateName},</p>
+         <p>Your interview for the recruitment process has been confirmed.</p>
          <p><b>Date:</b> ${new Date(date).toLocaleDateString()}</p>
          <p><b>Time:</b> ${time}</p>
-         <p>If you have any queries or messages, please get in touch with our Point of Contact (POC):</p>
+         <p>For any questions, please contact the interview coordinator below:</p>
          <p><b>Contact Person:</b> ${pocName}</p>
-         <p><b>Mobile Number:</b> ${pocNumber}</p>`
+         <p><b>Mobile Number:</b> ${pocNumber}</p>
+         
+         <p>Warm regards,</p>
+         <p>Recruitment Team</p>`
       ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
     }
 
@@ -648,18 +684,39 @@ const assignTask = async (req, res) => {
       }
     }
 
-    // Get candidate email
+    // Get candidate email and name
     let candidateEmail = '';
+    let candidateName = 'Candidate';
     if (isDbConnected()) {
       const studentUser = await mongoose.model('User').findById(userId);
-      if (studentUser) candidateEmail = studentUser.email;
+      if (studentUser) {
+        candidateEmail = studentUser.email;
+        candidateName = studentUser.name || candidateName;
+      }
     } else {
       const { inMemoryUsers } = require('./authController');
       const studentUser = inMemoryUsers.find(u => u._id === userId || u.id === userId);
-      if (studentUser) candidateEmail = studentUser.email;
+      if (studentUser) {
+        candidateEmail = studentUser.email;
+        candidateName = studentUser.name || candidateName;
+      }
     }
 
-    // Task Assigned email notification removed as per request.
+    if (candidateEmail) {
+      sendRecruitmentEmail(
+        candidateEmail,
+        'Task Assigned',
+        'Your Coding Task Has Been Assigned',
+        `<p>Hello ${candidateName},</p>
+         <p>A new coding task has been assigned to you by the recruitment team.</p>
+         <p><b>Task Title:</b> ${title}</p>
+         <p><b>Deadline:</b> ${new Date(deadline).toLocaleDateString()}</p>
+         <p>Please complete the task by the due date and submit your work through the portal.</p>
+         <p>If you have any questions, feel free to reach out to the recruitment team.</p>
+         <p>Thank you,</p>
+         <p>Recruitment Team</p>`
+      ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
+    }
 
     res.status(200).json({
       message: 'Task assigned successfully!',
@@ -703,16 +760,39 @@ const submitStudentTask = async (req, res) => {
 
     // Send email notification to candidate
     let candidateEmail = '';
+    let candidateName = 'Candidate';
     if (isDbConnected()) {
       const studentUser = await mongoose.model('User').findById(userId);
-      if (studentUser) candidateEmail = studentUser.email;
+      if (studentUser) {
+        candidateEmail = studentUser.email;
+        candidateName = studentUser.name || candidateName;
+      }
     } else {
       const { inMemoryUsers } = require('./authController');
       const studentUser = inMemoryUsers.find(u => u._id === userId || u.id === userId);
-      if (studentUser) candidateEmail = studentUser.email;
+      if (studentUser) {
+        candidateEmail = studentUser.email;
+        candidateName = studentUser.name || candidateName;
+      }
     }
 
-    // Task Submitted email notification removed as per request.
+    if (candidateEmail) {
+      sendRecruitmentEmail(
+        candidateEmail,
+        'Task Submitted',
+        'Your Task Has Been Submitted',
+        `<p>Hello ${candidateName},</p>
+         <p>We have received your task submission for the evaluation round.</p>
+         <p><b>Submitted Links:</b></p>
+         <p>GitHub: ${githubLink || 'Not provided'}</p>
+         <p>Live URL: ${liveUrl || 'Not provided'}</p>
+         <p>Zip File: ${zipUrl || 'Not provided'}</p>
+         <p>Our recruitment team will review your submission and update you with the next steps.</p>
+         <p>Thank you for your effort.</p>
+         <p>Regards,</p>
+         <p>Recruitment Team</p>`
+      ).catch(err => console.error('[BACKGROUND EMAIL ERROR]', err));
+    }
 
     res.status(200).json({
       message: 'Task submitted successfully!',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LogIn, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { LogIn, Mail, Lock, ArrowRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 
@@ -15,6 +15,7 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -46,9 +47,33 @@ const Login = () => {
 
       <div className="max-w-md w-full glass-card p-8 border border-white/5 relative z-10 flex flex-col gap-6">
         <div className="text-center">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Club Portal</span>
-          <h2 className="font-display text-2xl font-extrabold text-white mt-1">Student Login</h2>
-          <p className="text-xs text-white/50 mt-1">Welcome back. Enter credentials to manage applications.</p>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Recruitment Portal</span>
+          <h2 className="font-display text-2xl font-extrabold text-white mt-1">User Login</h2>
+          <p className="text-xs text-white/50 mt-1">Welcome back. Enter credentials to access your dashboard.</p>
+        </div>
+
+        {/* Demo Credentials Box */}
+        <div className="bg-brand-gold/10 border border-brand-gold/30 rounded-xl p-4 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-brand-gold flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4" /> Demo Admin Credentials
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setValue('email', 'admin@recruitmentportal.com');
+                setValue('password', 'adminpassword123');
+                showToast('Demo admin credentials loaded!', 'info');
+              }}
+              className="text-[10px] font-bold bg-brand-gold text-brand-brown-dark px-2.5 py-1 rounded-md hover:bg-brand-gold-light transition-all cursor-pointer"
+            >
+              Auto-fill Admin
+            </button>
+          </div>
+          <div className="text-[11px] font-mono text-white/90 space-y-0.5">
+            <div><span className="text-white/50">Email:</span> admin@recruitmentportal.com</div>
+            <div><span className="text-white/50">Password:</span> adminpassword123</div>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">

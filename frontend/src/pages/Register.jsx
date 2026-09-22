@@ -41,9 +41,9 @@ const Register = () => {
 
       <div className="max-w-md w-full glass-card p-8 border border-white/5 relative z-10 flex flex-col gap-6">
         <div className="text-center">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Club Portal</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Recruitment Portal</span>
           <h2 className="font-display text-2xl font-extrabold text-white mt-1">Student Signup</h2>
-          <p className="text-xs text-white/50 mt-1">Create an account to submit your coding club application.</p>
+          <p className="text-xs text-white/50 mt-1">Create an account to submit your recruitment application.</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">

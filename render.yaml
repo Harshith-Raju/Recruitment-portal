@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: recruitment-portal
+    env: node
+    buildCommand: npm run install:all && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: ADMIN_EMAIL
+        value: admin@recruitmentportal.com
+      - key: ADMIN_PASSWORD
+        value: adminpassword123
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGO_URI
+        sync: false

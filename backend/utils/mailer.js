@@ -29,7 +29,7 @@ const getTransporter = () => {
 };
 
 const getFromAddress = () =>
-  process.env.SMTP_FROM || '"SRKR Coding Club" <recruitment@srkrec.edu.in>';
+  process.env.SMTP_FROM || '"Recruitment Portal" <support@recruitmentportal.com>';
 
 const sendEmail = async ({ to, subject, text, html }) => {
   if (!isSmtpConfigured()) {
@@ -63,7 +63,7 @@ const sendOTPEmail = async (email, otp) => {
 
   return sendEmail({
     to: email,
-    subject: 'Verification OTP - SRKR Coding Club',
+    subject: 'Verification OTP - Recruitment Portal',
     text: `Your OTP for verification is: ${otp}. It is valid for 10 minutes.`,
     html: `<h3>Verification OTP</h3><p>Your OTP for verification is: <b>${otp}</b>. It is valid for 10 minutes.</p>`,
   });
@@ -72,7 +72,7 @@ const sendOTPEmail = async (email, otp) => {
 const sendRecruitmentEmail = async (email, subject, title, bodyHtml) => {
   return sendEmail({
     to: email,
-    subject: `${subject} - SRKR Coding Club`,
+    subject: `${subject} - Recruitment Portal`,
     text: `${title}\n\nDetails:\n${bodyHtml.replace(/<[^>]*>/g, '')}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ffd700; border-radius: 12px; background-color: #2b1f1d; color: #ffffff;">
@@ -81,7 +81,7 @@ const sendRecruitmentEmail = async (email, subject, title, bodyHtml) => {
           ${bodyHtml}
         </div>
         <p style="font-size: 11px; color: #a3a3a3; margin-top: 30px; border-top: 1px solid #444; padding-top: 10px;">
-          This is an automated notification from the SRKR Coding Club Recruitment Portal. Please do not reply directly.
+          This is an automated notification from the Recruitment Portal. Please do not reply directly.
         </p>
       </div>
     `,

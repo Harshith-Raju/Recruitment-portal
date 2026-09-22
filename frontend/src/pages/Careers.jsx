@@ -14,7 +14,7 @@ const initialRoles = [
     icon: <Layout className="w-5 h-5 text-brand-gold" />,
     openings: 4,
     deadline: 'Aug 28, 2026',
-    description: 'Build and maintain web portals, application pages, and user dashboards for coding club events.',
+    description: 'Build and maintain web portals, application pages, and user dashboards for recruitment & tech events.',
     responsibilities: [
       'Implement responsive layouts using HTML, CSS, and JavaScript.',
       'Connect frontend views to backend APIs.',
@@ -71,7 +71,7 @@ const initialRoles = [
     icon: <Paintbrush className="w-5 h-5 text-brand-gold" />,
     openings: 3,
     deadline: 'Aug 28, 2026',
-    description: 'Design visual posters, brochures, and layouts representing our club branding for events.',
+    description: 'Design visual posters, brochures, and layouts representing our team branding for events.',
     responsibilities: [
       'Create digital posters and branding assets.',
       'Ensure design consistency across all digital media.',
@@ -128,7 +128,7 @@ const initialRoles = [
     icon: <Users className="w-5 h-5 text-brand-gold" />,
     openings: 3,
     deadline: 'Aug 28, 2026',
-    description: 'Build relationships with other student clubs, reach out to departments, and communicate events.',
+    description: 'Build relationships with student leads, reach out to departments, and communicate events.',
     responsibilities: [
       'Coordinate external communications and student notices.',
       'Liaise with college staff and students.',
@@ -147,7 +147,7 @@ const initialRoles = [
     icon: <Users className="w-5 h-5 text-brand-gold" />,
     openings: 3,
     deadline: 'Aug 28, 2026',
-    description: 'Interact with industry sponsors, secure funding, and coordinate cross-club collaborations.',
+    description: 'Interact with industry sponsors, secure funding, and coordinate cross-team collaborations.',
     responsibilities: [
       'Pitch event benefits to corporate brands.',
       'Arrange resources, sponsor stalls, and coordinate branding.',
@@ -185,7 +185,7 @@ const initialRoles = [
     icon: <FileText className="w-5 h-5 text-brand-gold" />,
     openings: 3,
     deadline: 'Aug 28, 2026',
-    description: 'Write engaging copy, manage social media profiles, and promote club hackathons digitally.',
+    description: 'Write engaging copy, manage social media profiles, and promote hackathons digitally.',
     responsibilities: [
       'Write social media descriptions and event banners (LinkedIn, Instagram).',
       'Track reach of post campaigns.',
@@ -251,7 +251,7 @@ const Careers = () => {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto flex flex-col gap-4">
           <span className="text-xs uppercase tracking-[0.2em] text-brand-gold font-bold">Careers Portal</span>
-          <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-white">Join the Core Club</h1>
+          <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-white">Join Our Engineering Team</h1>
           <p className="text-white/60">
             Work with us to engineer high-impact solutions, host national hackathons, and accelerate your coding potential.
           </p>

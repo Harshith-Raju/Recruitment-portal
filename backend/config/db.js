@@ -4,7 +4,7 @@ const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 3000;
 
 const connectDB = async () => {
-  const uri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/srkr_coding_club';
+  const uri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/recruitment_portal';
   const isProduction = process.env.NODE_ENV === 'production';
 
   if (isProduction && !process.env.MONGO_URI) {

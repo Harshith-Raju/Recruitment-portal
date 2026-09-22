@@ -55,7 +55,7 @@ const Home = () => {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="max-w-2xl text-base sm:text-lg md:text-xl text-white/70 leading-relaxed font-sans"
           >
-            Welcome to the SRKR Coding Club Recruitment Portal. Build production-ready projects, excel in national hackathons, and shape your professional software career.
+            Welcome to our official Recruitment Portal. Build production-ready projects, excel in national hackathons, and shape your professional software career.
           </motion.p>
 
           <motion.div
@@ -111,7 +111,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white mb-4">
-              Why Join the SRKR Coding Club?
+              Why Join Our Engineering Team?
             </h2>
             <p className="text-white/60">
               We aren't just another college club. We are a startup-incubator style technical community.

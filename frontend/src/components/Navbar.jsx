@@ -54,10 +54,10 @@ const Navbar = () => {
         </div>
         <div className="flex flex-col">
           <span className="font-display font-bold text-lg text-white leading-tight tracking-wide">
-            SRKR <span className="text-brand-gold font-extrabold">CODING CLUB</span>
+            RECRUITMENT <span className="text-brand-gold font-extrabold">PORTAL</span>
           </span>
           <span className="text-[10px] text-white/50 tracking-[0.15em] uppercase font-mono">
-            Recruitment Portal
+            Talent Acquisition Platform
           </span>
         </div>
       </NavLink>
@@ -112,7 +112,7 @@ const Navbar = () => {
             to="/careers"
             className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-full border border-brand-gold/30 bg-brand-gold/10 hover:bg-brand-gold text-white hover:text-brand-brown-dark transition-all duration-300 shadow-sm hover:shadow-brand-gold/30"
           >
-            Join Club <ArrowRight className="w-3.5 h-3.5" />
+            Apply Now <ArrowRight className="w-3.5 h-3.5" />
           </NavLink>
         )}
       </div>

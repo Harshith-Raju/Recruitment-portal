@@ -52,7 +52,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-white mb-1">Office Address</h4>
-                  <p className="text-white/60">SRKR Engineering College, Bhimavaram, Andhra Pradesh - 534204</p>
+                  <p className="text-white/60">Technology & Innovation Center, Main Campus</p>
                 </div>
               </li>
               <li className="flex items-start gap-4">
@@ -61,8 +61,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-white mb-1">Email Coordinates</h4>
-                  <a href="mailto:codingclub@srkrec.edu.in" className="text-white/60 hover:text-brand-gold transition-colors">
-                    srkrcodingclubofficial@gmail.com
+                  <a href="mailto:support@recruitmentportal.com" className="text-white/60 hover:text-brand-gold transition-colors">
+                    support@recruitmentportal.com
                   </a>
                 </div>
               </li>

@@ -29,7 +29,7 @@ const coordinators = [
   {
     name: 'Dr. M. Jagapathi Raju',
     role: 'Principal & Chief Patron',
-    designation: 'Department of CSE, SRKREC',
+    designation: 'Department of Computer Science',
     image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256'
   },
   {
@@ -56,7 +56,7 @@ const About = () => {
             animate={{ opacity: 1 }}
             className="text-xs uppercase tracking-[0.2em] text-brand-gold font-bold"
           >
-            About SRKR Coding Club
+            About Recruitment Portal
           </motion.span>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -72,7 +72,7 @@ const About = () => {
             transition={{ delay: 0.2 }}
             className="text-white/60 text-lg leading-relaxed"
           >
-            Established with a vision to bridge the gap between classroom theory and industry practice, the SRKR Coding Club has evolved into a premier coding hub.
+            Established with a vision to bridge the gap between classroom theory and industry practice, our Recruitment Portal connects top engineering talent with high-impact software roles.
           </motion.p>
         </div>
 

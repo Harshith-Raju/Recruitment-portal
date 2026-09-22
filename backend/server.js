@@ -12,23 +12,27 @@ const bcrypt = require('bcryptjs');
 
 const seedAdmin = async () => {
   try {
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@srkrec.edu.in';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@recruitmentportal.com';
     const adminPassword = process.env.ADMIN_PASSWORD || 'adminpassword123';
 
-    const adminExists = await User.findOne({ email: adminEmail });
-    if (!adminExists) {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(adminPassword, salt);
-      await User.create({
-        name: 'Club Administrator',
-        email: adminEmail,
-        password: hashedPassword,
-        registerNo: 'ADMIN',
-        deptYear: 'Staff',
-        isVerified: true,
-        isAdmin: true,
-      });
-      console.log(`Admin user seeded: ${adminEmail}`);
+    const emailsToSeed = Array.from(new Set([adminEmail, 'admin@recruitmentportal.com', 'admin@srkrec.edu.in']));
+
+    for (const email of emailsToSeed) {
+      const adminExists = await User.findOne({ email });
+      if (!adminExists) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(adminPassword, salt);
+        await User.create({
+          name: 'Portal Administrator',
+          email,
+          password: hashedPassword,
+          registerNo: 'ADMIN',
+          deptYear: 'Staff',
+          isVerified: true,
+          isAdmin: true,
+        });
+        console.log(`Admin user seeded: ${email}`);
+      }
     }
   } catch (error) {
     console.log('Admin seeding skipped:', error.message);
@@ -82,7 +86,7 @@ const startServer = async () => {
     });
   } else {
     app.get('/', (req, res) => {
-      res.json({ message: 'SRKR Coding Club Recruitment API is active.' });
+      res.json({ message: 'Recruitment Portal API is active.' });
     });
   }
 

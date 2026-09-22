@@ -1,13 +1,13 @@
-# SRKR Coding Club — Recruitment Portal
+# Recruitment Portal
 
-Full-stack recruitment portal with student registration, OTP verification, application submission, and admin dashboard.
+Full-stack recruitment portal with student registration, OTP verification, application submission, resume parsing, interactive applicant evaluation, and admin management dashboard.
 
 ## Tech Stack
 
-- **Frontend:** React 19, Vite, Tailwind CSS
+- **Frontend:** React 19, Vite, Tailwind CSS, Lucide Icons
 - **Backend:** Node.js, Express, MongoDB (Mongoose)
 - **Email:** Nodemailer (SMTP)
-- **File storage:** Cloudinary (optional) or local uploads
+- **File storage:** GridFS / Local upload streaming
 
 ## Quick Start (Local Development)
 
@@ -23,7 +23,6 @@ Copy the example env files and fill in your credentials:
 
 ```bash
 cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
 ```
 
 **Required in `backend/.env`:**
@@ -43,26 +42,16 @@ SMTP_PORT=587
 SMTP_SECURE=false
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-16-char-app-password
-SMTP_FROM="SRKR Coding Club" <your-email@gmail.com>
+SMTP_FROM="Recruitment Portal" <your-email@gmail.com>
 ```
-
-> Enable 2FA on Gmail and create an [App Password](https://myaccount.google.com/apppasswords).
 
 **MongoDB Atlas example:**
 
 ```env
-MONGO_URI=mongodb+srv://user:password@cluster.mongodb.net/srkr_coding_club?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://user:password@cluster.mongodb.net/recruitment_portal?retryWrites=true&w=majority
 ```
 
-### 3. Start MongoDB
-
-Use local MongoDB or MongoDB Atlas. For Docker:
-
-```bash
-docker run -d -p 27017:27017 --name mongo mongo:7
-```
-
-### 4. Run the app
+### 3. Run the app
 
 Terminal 1 — backend:
 
@@ -80,49 +69,32 @@ npm run dev:frontend
 - Backend API: http://localhost:5000
 - Health check: http://localhost:5000/api/health
 
-## Production Deployment
+## Demo Admin Access
 
-### Option A: Docker Compose (recommended)
+To test the admin dashboard without manual setup, use the pre-configured Demo Admin credentials:
 
-1. Fill in `backend/.env` with production values
-2. Set `NODE_ENV=production` and a strong `JWT_SECRET`
-3. Run:
+- **Admin Email:** `admin@recruitmentportal.com`
+- **Admin Password:** `adminpassword123`
 
-```bash
-docker compose up --build -d
-```
+*(You can also use the single-click "Auto-fill Admin" button directly on the Login page)*
 
-The app serves on port **5000** (frontend + API from one container).
+## Production Deployment (Render & Vercel)
 
-### Option B: Manual deploy (Render, Railway, VPS)
+### Option A: Render Web Service (Full-stack)
 
-1. Build frontend:
+Deploy as a single Express Web Service on Render:
+1. Connect repository to Render.
+2. Build Command: `npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend`
+3. Start Command: `npm start`
+4. Set Environment Variables: `NODE_ENV=production`, `MONGO_URI`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
 
-```bash
-cd frontend
-VITE_API_URL= npm run build
-```
+### Option B: Vercel (Frontend) + Render/Serverless (Backend)
 
-2. Set environment variables on your host (see `backend/.env.example`)
-
-3. Start backend (serves built frontend in production):
-
-```bash
-cd backend
-NODE_ENV=production npm start
-```
-
-### Option C: Separate frontend/backend
-
-- Deploy backend with `NODE_ENV=production`
-- Deploy frontend to Vercel/Netlify with `VITE_API_URL=https://your-api-domain.com`
-
-## Admin Access
-
+1. Deploy `frontend/` to Vercel (Root Directory: `frontend`).
+2. Set `VITE_API_URL` to point to your deployed backend URL.
 
 ## API Health Check
 
-```
+```http
 GET /api/health
 ```
-
